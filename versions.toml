@@ -104,14 +104,13 @@ status = "unpublished"
 repo = "Sigilweaver/OpenKSpace"
 crate = "openkspace-cli"
 crates_version = "0.2.0"
-status = "unpublished"
 
 [scientific.dicom-atlas]
 repo = "Sigilweaver/DICOM-Atlas"
 crate = "dicom-map"
-crates_version = "0.2.0"
+crates_version = "0.2.3"
 pypi = "dicom-map"
-pypi_version = "0.1.0"
+pypi_version = "0.2.3"
 
 # --------------------------------------------------------------------------
 # Infrastructure & site
