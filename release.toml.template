@@ -1,0 +1,30 @@
+# cargo-release configuration template for Sigilweaver Rust workspaces.
+#
+# Copy this file to a Rust repository root as `release.toml` to opt into
+# coordinated release behavior across the Sigilweaver suite.
+#
+# Usage:
+#   cargo install cargo-release
+#   cargo release patch                  # bump patch on all crates
+#   cargo release minor --execute        # actually do it
+#
+# Conservative defaults: never auto-push, require explicit --execute.
+
+allow-branch = ["main"]
+pre-release-commit-message = "release: {{crate_name}} v{{version}}"
+tag-message = "{{crate_name}} v{{version}}"
+tag-name = "v{{version}}"
+sign-tag = false
+sign-commit = false
+publish = true
+push = false                       # human reviews then pushes
+consolidate-commits = true         # one commit for the whole workspace bump
+
+# Search-and-replace patterns applied in addition to Cargo.toml bumps.
+# Use these to keep README badges / docs version pins in sync.
+pre-release-replacements = [
+  { file = "CHANGELOG.md",
+    search = "## \\[Unreleased\\]",
+    replace = "## [Unreleased]\n\n- _No unreleased changes yet._\n\n## [{{version}}] - {{date}}",
+    exactly = 1 },
+]

@@ -1,0 +1,9 @@
+# Ignore everything by default
+/*
+
+# Allowlist: org-ops files tracked by this repository
+!/.gitignore
+!/README.md
+!/scripts/
+!/versions.toml
+!/release.toml.template
