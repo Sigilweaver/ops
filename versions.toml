@@ -52,9 +52,12 @@ pypi_version = "1.1.0"
 
 [proteomics.prolance]
 repo = "Sigilweaver/ProLance"
-crate = "prolance"
-crates_version = "0.1.0"
-status = "unpublished"
+crate = "prolance-core"
+crates_version = "0.2.0-alpha"
+ms_crate = "prolance-ms"
+ms_version = "0.2.0-alpha"
+pypi = "prolance"
+pypi_version = "0.2.0a0"
 
 # --------------------------------------------------------------------------
 # Data formats
