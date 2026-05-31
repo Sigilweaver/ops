@@ -18,11 +18,11 @@
 [proteomics.openproteo]
 repo = "Sigilweaver/OpenProteo"
 crate = "openproteo-io"
-crates_version = "1.0.3"
+crates_version = "1.1.0"
 cli_crate = "openproteo-io-cli"
-cli_version = "1.0.3"
+cli_version = "1.1.0"
 pypi = "openproteo"
-pypi_version = "1.0.3"
+pypi_version = "1.1.0"
 
 [proteomics.openproteo-core]
 repo = "Sigilweaver/OpenProteoCore"
@@ -32,23 +32,23 @@ crates_version = "1.0.1"
 [proteomics.opentfraw]
 repo = "Sigilweaver/OpenTFRaw"
 crate = "opentfraw"
-crates_version = "1.0.6"
+crates_version = "1.1.0"
 pypi = "opentfraw"
-pypi_version = "1.0.6"
+pypi_version = "1.1.0"
 
 [proteomics.OpenTimsTDF]
 repo = "Sigilweaver/OpenTimsTDF"
 crate = "OpenTimsTDF"
-crates_version = "1.0.6"
+crates_version = "1.1.0"
 pypi = "opentimstdf"
-pypi_version = "1.0.6"
+pypi_version = "1.1.0"
 
 [proteomics.openwraw]
 repo = "Sigilweaver/OpenWRaw"
 crate = "openwraw"
-crates_version = "1.0.5"
+crates_version = "1.1.0"
 pypi = "openwraw"
-pypi_version = "1.0.5"
+pypi_version = "1.1.0"
 
 [proteomics.prolance]
 repo = "Sigilweaver/ProLance"
@@ -64,23 +64,23 @@ status = "unpublished"
 [formats.openqvd]
 repo = "Sigilweaver/OpenQVD"
 crate = "openqvd"
-crates_version = "1.1.0"
+crates_version = "1.2.0"
 pypi = "openqvd"
-pypi_version = "1.1.0"
+pypi_version = "1.2.0"
 
 [formats.openyxdb]
 repo = "Sigilweaver/OpenYXDB"
 pypi = "openyxdb"
-pypi_version = "1.4.0"
+pypi_version = "1.4.1"
 
 [formats.openqbw]
 repo = "Sigilweaver/OpenQBW"
 crate = "openqbw"
-crates_version = "0.1.0"
+crates_version = "0.1.1"
 cli_crate = "openqbw-cli"
-cli_version = "0.1.0"
+cli_version = "0.1.1"
 pypi = "openqbw"
-pypi_version = "0.1.0"
+pypi_version = "0.1.1"
 
 [formats.opensqlanywhere]
 repo = "Sigilweaver/OpenSQLAnywhere"
@@ -92,9 +92,9 @@ cli_version = "0.1.0"
 [formats.sigilyx]
 repo = "Sigilweaver/SigilYX"
 crate = "sigilyx"
-crates_version = "0.2.1"
+crates_version = "0.3.0"
 pypi = "sigilyx"
-pypi_version = "0.2.1"
+pypi_version = "0.3.0"
 
 # --------------------------------------------------------------------------
 # Scientific / bioinformatics
@@ -110,14 +110,14 @@ status = "unpublished"
 [scientific.openkspace]
 repo = "Sigilweaver/OpenKSpace"
 crate = "openkspace-cli"
-crates_version = "0.2.0"
+crates_version = "0.3.0"
 
 [scientific.dicom-atlas]
 repo = "Sigilweaver/DICOM-Atlas"
 crate = "dicom-map"
-crates_version = "0.2.3"
+crates_version = "0.2.4"
 pypi = "dicom-map"
-pypi_version = "0.2.3"
+pypi_version = "0.2.4"
 
 # --------------------------------------------------------------------------
 # Infrastructure & site
@@ -142,7 +142,7 @@ deploy = "sigilweaver.app/blog"
 [policy]
 # Minimum Rust version honored across all libraries that have not pinned
 # their own MSRV for compatibility reasons.
-msrv = "1.87"
+msrv = "1.88"
 
 # Standard Python version matrix for maturin-built bindings.
 python_versions = ["3.9", "3.10", "3.11", "3.12", "3.13"]
