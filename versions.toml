@@ -18,11 +18,11 @@
 [proteomics.openproteo]
 repo = "Sigilweaver/OpenProteo"
 crate = "openproteo-io"
-crates_version = "1.1.0"
+crates_version = "1.2.0"
 cli_crate = "openproteo-io-cli"
-cli_version = "1.1.0"
+cli_version = "1.2.0"
 pypi = "openproteo"
-pypi_version = "1.1.0"
+pypi_version = "1.2.0"
 
 [proteomics.openproteo-core]
 repo = "Sigilweaver/OpenProteoCore"
@@ -32,9 +32,9 @@ crates_version = "1.0.1"
 [proteomics.opentfraw]
 repo = "Sigilweaver/OpenTFRaw"
 crate = "opentfraw"
-crates_version = "1.1.0"
+crates_version = "1.2.0"
 pypi = "opentfraw"
-pypi_version = "1.1.0"
+pypi_version = "1.2.0"
 
 [proteomics.OpenTimsTDF]
 repo = "Sigilweaver/OpenTimsTDF"
@@ -104,9 +104,9 @@ pypi_version = "0.3.0"
 # --------------------------------------------------------------------------
 [scientific]
 
-[scientific.biolance]
-repo = "Sigilweaver/BioLance"
-crate = "biolance-cli"
+[scientific.genolance]
+repo = "Sigilweaver/GenoLance"
+crate = "genolance-cli"
 crates_version = "0.2.0"
 status = "unpublished"
 
@@ -118,7 +118,7 @@ crates_version = "0.3.0"
 [scientific.dicom-atlas]
 repo = "Sigilweaver/DICOM-Atlas"
 crate = "dicom-map"
-crates_version = "0.2.4"
+crates_version = "0.2.6"
 pypi = "dicom-map"
 pypi_version = "0.2.4"
 
