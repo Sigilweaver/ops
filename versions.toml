@@ -46,9 +46,9 @@ pypi_version = "1.1.0"
 [proteomics.openwraw]
 repo = "Sigilweaver/OpenWRaw"
 crate = "openwraw"
-crates_version = "1.1.0"
+crates_version = "1.2.0"
 pypi = "openwraw"
-pypi_version = "1.1.0"
+pypi_version = "1.2.0"
 
 [proteomics.prolance]
 repo = "Sigilweaver/ProLance"
