@@ -18,11 +18,11 @@
 [proteomics.openproteo]
 repo = "Sigilweaver/OpenProteo"
 crate = "openproteo-io"
-crates_version = "1.2.0"
+crates_version = "1.2.1"
 cli_crate = "openproteo-io-cli"
-cli_version = "1.2.0"
+cli_version = "1.2.1"
 pypi = "openproteo"
-pypi_version = "1.2.0"
+pypi_version = "1.2.1"
 
 [proteomics.openproteo-core]
 repo = "Sigilweaver/OpenProteoCore"
