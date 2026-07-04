@@ -118,9 +118,9 @@ crates_version = "0.3.0"
 [scientific.dicom-atlas]
 repo = "Sigilweaver/DICOM-Atlas"
 crate = "dicom-map"
-crates_version = "0.2.6"
+crates_version = "0.2.7"
 pypi = "dicom-map"
-pypi_version = "0.2.4"
+pypi_version = "0.2.7"
 
 # --------------------------------------------------------------------------
 # Infrastructure & site
