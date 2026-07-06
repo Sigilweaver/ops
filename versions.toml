@@ -32,23 +32,23 @@ crates_version = "1.0.1"
 [proteomics.opentfraw]
 repo = "Sigilweaver/OpenTFRaw"
 crate = "opentfraw"
-crates_version = "1.2.0"
+crates_version = "1.2.1"
 pypi = "opentfraw"
-pypi_version = "1.2.0"
+pypi_version = "1.2.1"
 
 [proteomics.OpenTimsTDF]
 repo = "Sigilweaver/OpenTimsTDF"
 crate = "OpenTimsTDF"
-crates_version = "1.2.0"
+crates_version = "1.2.1"
 pypi = "opentimstdf"
-pypi_version = "1.2.0"
+pypi_version = "1.2.1"
 
 [proteomics.openwraw]
 repo = "Sigilweaver/OpenWRaw"
 crate = "openwraw"
-crates_version = "1.2.0"
+crates_version = "1.2.1"
 pypi = "openwraw"
-pypi_version = "1.2.0"
+pypi_version = "1.2.1"
 
 [proteomics.prolance]
 repo = "Sigilweaver/ProLance"
@@ -74,16 +74,16 @@ pypi_version = "1.2.0"
 [formats.openyxdb]
 repo = "Sigilweaver/OpenYXDB"
 pypi = "openyxdb"
-pypi_version = "1.4.1"
+pypi_version = "1.4.2"
 
 [formats.openqbw]
 repo = "Sigilweaver/OpenQBW"
 crate = "openqbw"
-crates_version = "0.1.3"
+crates_version = "0.1.4"
 cli_crate = "openqbw-cli"
-cli_version = "0.1.3"
+cli_version = "0.1.4"
 pypi = "openqbw"
-pypi_version = "0.1.3"
+pypi_version = "0.1.4"
 
 [formats.opensqlanywhere]
 repo = "Sigilweaver/OpenSQLAnywhere"
@@ -118,9 +118,9 @@ crates_version = "0.3.0"
 [scientific.dicom-atlas]
 repo = "Sigilweaver/DICOM-Atlas"
 crate = "dicom-map"
-crates_version = "0.2.7"
+crates_version = "0.2.8"
 pypi = "dicom-map"
-pypi_version = "0.2.7"
+pypi_version = "0.2.8"
 
 # --------------------------------------------------------------------------
 # Infrastructure & site
