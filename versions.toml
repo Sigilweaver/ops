@@ -29,6 +29,11 @@ repo = "Sigilweaver/OpenProteoCore"
 crate = "openproteo-core"
 crates_version = "1.0.1"
 
+[proteomics.openaraw]
+repo = "Sigilweaver/OpenARaw"
+crate = "openaraw"
+crates_version = "0.1.0"
+
 [proteomics.opentfraw]
 repo = "Sigilweaver/OpenTFRaw"
 crate = "opentfraw"
