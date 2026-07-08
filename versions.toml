@@ -34,6 +34,11 @@ repo = "Sigilweaver/OpenARaw"
 crate = "openaraw"
 crates_version = "0.1.0"
 
+[proteomics.opensxraw]
+repo = "Sigilweaver/OpenSXRaw"
+crate = "opensxraw"
+crates_version = "0.1.0"
+
 [proteomics.opentfraw]
 repo = "Sigilweaver/OpenTFRaw"
 crate = "opentfraw"
