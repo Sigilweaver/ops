@@ -63,12 +63,17 @@ def check_crate(label: str, repo: str, want_version: str, crate: str | None = No
         print(f"  ?  {label}: no Cargo.toml found for {repo}")
         return
     have = extract_version(cargo.read_text())
-    # Fall back to crates/<crate>/Cargo.toml if no top-level version.
+    # Fall back to crate directory or crates/<crate>/Cargo.toml if no top-level version.
     if have is None and crate is not None:
-        sub = cargo.parent / "crates" / crate / "Cargo.toml"
+        sub = cargo.parent / crate / "Cargo.toml"
         if sub.exists():
             cargo = sub
             have = extract_version(cargo.read_text())
+        else:
+            sub = cargo.parent / "crates" / crate / "Cargo.toml"
+            if sub.exists():
+                cargo = sub
+                have = extract_version(cargo.read_text())
     if have is None:
         print(f"  ?  {label}: no version found in {cargo}")
         return
@@ -79,7 +84,7 @@ def check_crate(label: str, repo: str, want_version: str, crate: str | None = No
         drift += 1
         print(f"  !! {label}: have {have}, want {want_version}  ({cargo})")
 
-for section in ("proteomics", "formats", "scientific"):
+for section in ("mass_spectrometry", "formats", "scientific"):
     if section not in versions:
         continue
     print(f"== {section} ==")
