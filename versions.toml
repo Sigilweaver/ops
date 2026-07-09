@@ -42,9 +42,9 @@ crates_version = "0.1.0"
 [proteomics.opentfraw]
 repo = "Sigilweaver/OpenTFRaw"
 crate = "opentfraw"
-crates_version = "1.2.1"
+crates_version = "1.3.0"
 pypi = "opentfraw"
-pypi_version = "1.2.1"
+pypi_version = "1.3.0"
 
 [proteomics.OpenTimsTDF]
 repo = "Sigilweaver/OpenTimsTDF"
