@@ -33,11 +33,15 @@ crates_version = "1.0.0"
 repo = "Sigilweaver/OpenARaw"
 crate = "openaraw"
 crates_version = "0.1.0"
+pypi = "openaraw"
+pypi_version = "0.1.0"
 
 [mass_spectrometry.opensxraw]
 repo = "Sigilweaver/OpenSXRaw"
 crate = "opensxraw"
-crates_version = "0.1.0"
+crates_version = "0.2.0"
+pypi = "opensxraw"
+pypi_version = "0.2.0"
 
 [mass_spectrometry.opentfraw]
 repo = "Sigilweaver/OpenTFRaw"

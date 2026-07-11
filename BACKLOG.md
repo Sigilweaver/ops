@@ -29,8 +29,8 @@ checks; harden them as a family, not one at a time.
   - [SigilYX#24](https://github.com/Sigilweaver/SigilYX/issues/24) - fuzz harness over the YXDB parse path
   - Extend the same fuzz treatment to opentfraw / opentimstdf / openwraw (no issue yet).
 - **Standardize a `cargo audit` / dependency-vuln CI job across the org.**
-  openaraw, opensxraw, and Loom lack one; do it suite-wide the way
-  CONTRIBUTING was unified. (No single issue yet.)
+  Done for openaraw and opensxraw (2026-07-11); Loom still lacks one
+  (tracked separately as a Python dep gate, [Loom#2](https://github.com/Sigilweaver/Loom/issues/2)).
 
 ## 2. Real CI coverage (cross-cutting)
 
@@ -72,3 +72,8 @@ is the biggest confidence gap in the suite.
   Waters, Agilent, SCIEX) after publishing openaraw (crates.io + PyPI) and
   opensxraw (crates.io) at 0.1.0.
 - Org-level community health files (issue/PR templates, SUPPORT.md).
+- OpenARaw / OpenSXRaw brought up to the OpenTFRaw maturity standard
+  (2026-07-11): `cargo audit` + Docusaurus deploy CI jobs, OpenSXRaw Python
+  bindings (`opensxraw-py` + PyPI publish), OpenARaw pyo3 0.28->0.29 (clears
+  RUSTSEC-2026-0176/0177), docs guide gaps filled, and both wired into the
+  Website hub. OpenSXRaw's PyPI publish lands with its next tagged release.
