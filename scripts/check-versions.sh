@@ -41,7 +41,7 @@ drift = 0
 checked = 0
 
 def find_cargo_toml(repo_name: str) -> Path | None:
-    # repo_name like "Sigilweaver/OpenProteo" -> look for OpenProteo/Cargo.toml
+    # repo_name like "Sigilweaver/OpenMassSpec" -> look for OpenMassSpec/Cargo.toml
     name = repo_name.split("/")[-1]
     candidate = root / name / "Cargo.toml"
     return candidate if candidate.exists() else None

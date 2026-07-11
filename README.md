@@ -15,7 +15,7 @@ repo, not the projects themselves.
 
 ## What does not live here
 
-The actual project repositories (OpenProteo, OpenQBW, DICOM-Atlas, etc.) are
+The actual project repositories (OpenMassSpec, OpenQBW, DICOM-Atlas, etc.) are
 their own GitHub repositories under the Sigilweaver organisation. This repo
 does not vendor or submodule them. Local developer workspaces typically
 clone the project repos as sibling directories next to this one; the
