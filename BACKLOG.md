@@ -61,7 +61,7 @@ is the biggest confidence gap in the suite.
 
 ## 3. Reach / packaging
 
-- [OpenMassSpec#2](https://github.com/Sigilweaver/OpenMassSpec/issues/2) - conda-forge feedstock for openmassspec-io + openmassspec (RELEASING.md documents the SOP; never done).
+- [OpenMassSpec#2](https://github.com/Sigilweaver/OpenMassSpec/issues/2) - conda-forge feedstock for openmassspec-io + openmassspec (RELEASING.md documents the SOP). `openmassspec-io` staged-recipes PR open: [conda-forge/staged-recipes#34167](https://github.com/conda-forge/staged-recipes/pull/34167) (replaces the stale pre-rename #34069, closed). `openmassspec` facade recipe still to follow once `openmassspec-io` merges (its `run:` dep needs the feedstock to exist for the solver).
 - **Zenodo / DOI reconciliation.** The OpenProteo -> OpenMassSpec rename may
   have left stale record titles; mint DOIs for the newly published openaraw
   / opensxraw. Manual (web UI). (No issue - not code.)
