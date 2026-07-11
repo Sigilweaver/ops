@@ -72,6 +72,12 @@ is the biggest confidence gap in the suite.
   Waters, Agilent, SCIEX) after publishing openaraw (crates.io + PyPI) and
   opensxraw (crates.io) at 0.1.0.
 - Org-level community health files (issue/PR templates, SUPPORT.md).
+- Security batch (2026-07-11): released OpenARaw 0.1.1 (pyo3 0.29 + MSScan
+  panic-guard, published crates.io + PyPI); upgraded OpenTFRaw and
+  OpenTimsTDF pyo3+numpy 0.22 -> 0.29, clearing RUSTSEC-2025-0020 /
+  RUSTSEC-2026-0177 and closing OpenTFRaw#20 + OpenTimsTDF#1 (audit ignores
+  dropped). The two upgrades are on main but UNRELEASED - published
+  crates/wheels still carry 0.22 until a TFRaw 1.3.2 / TimsTDF 1.2.4 cut.
 - OpenARaw / OpenSXRaw brought up to the OpenTFRaw maturity standard
   (2026-07-11): `cargo audit` + Docusaurus deploy CI jobs, OpenSXRaw Python
   bindings (`opensxraw-py` + PyPI publish), OpenARaw pyo3 0.28->0.29 (clears
