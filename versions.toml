@@ -105,9 +105,9 @@ cli_version = "0.1.0"
 [formats.sigilyx]
 repo = "Sigilweaver/SigilYX"
 crate = "sigilyx"
-crates_version = "0.3.1"
+crates_version = "0.3.2"
 pypi = "sigilyx"
-pypi_version = "0.3.1"
+pypi_version = "0.3.2"
 
 # --------------------------------------------------------------------------
 # Scientific / bioinformatics
