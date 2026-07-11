@@ -27,10 +27,16 @@ checks; harden them as a family, not one at a time.
   - [OpenARaw#1](https://github.com/Sigilweaver/OpenARaw/issues/1) - cap untrusted allocations
   - [OpenSXRaw#1](https://github.com/Sigilweaver/OpenSXRaw/issues/1) - bound read_scan_block + fix no-op cap
   - [SigilYX#24](https://github.com/Sigilweaver/SigilYX/issues/24) - fuzz harness over the YXDB parse path
-  - Extend the same fuzz treatment to opentfraw / opentimstdf / openwraw (no issue yet).
+  - [OpenWRaw#3](https://github.com/Sigilweaver/OpenWRaw/issues/3) - cap untrusted allocations + fuzz harness (~71 unwraps, 16 unbounded allocs)
+  - [OpenKSpace#1](https://github.com/Sigilweaver/OpenKSpace/issues/1) - cap ISMRMRD header-sized allocations (`ns * nc`)
+  - [OpenQVD#1](https://github.com/Sigilweaver/OpenQVD/issues/1) - cap QVD length-field allocations (`no_of_symbols`, `n_rows`)
+  - Extend the same fuzz treatment to opentfraw / opentimstdf (no issue yet).
 - **Standardize a `cargo audit` / dependency-vuln CI job across the org.**
-  Done for openaraw and opensxraw (2026-07-11); Loom still lacks one
-  (tracked separately as a Python dep gate, [Loom#2](https://github.com/Sigilweaver/Loom/issues/2)).
+  Done for the five MS readers (opentfraw, opentimstdf, openwraw, openaraw,
+  opensxraw). Still missing on genolance / dicom-atlas / openqbw / openqvd /
+  openkspace / opensqlanywhere / speclance / openmassspec / openmassspeccore
+  / sigilyx - a mechanical fix-now rollout (may surface real advisories, each
+  filed as its own issue). Loom is a separate Python dep gate, [Loom#2](https://github.com/Sigilweaver/Loom/issues/2).
 
 ## 2. Real CI coverage (cross-cutting)
 
@@ -42,7 +48,8 @@ is the biggest confidence gap in the suite.
   `fetch_corpus.py`) so conformance runs for real on CI. Affects all
   readers. (No single issue yet - suite-wide.)
 - [OpenARaw#2](https://github.com/Sigilweaver/OpenARaw/issues/2) / [OpenSXRaw#2](https://github.com/Sigilweaver/OpenSXRaw/issues/2) - byte-slice decoder unit tests (corpus-free coverage)
-- [SigilYX#23](https://github.com/Sigilweaver/SigilYX/issues/23) - test the macOS/Windows platforms it ships wheels for
+- [GenoLance#1](https://github.com/Sigilweaver/GenoLance/issues/1) - **no unit tests at all**; CI runs `cargo test` over an empty set
+- **Windows/macOS test-matrix gap** (ships wheels, tests only Linux): [SigilYX#23](https://github.com/Sigilweaver/SigilYX/issues/23), [OpenWRaw#2](https://github.com/Sigilweaver/OpenWRaw/issues/2), [OpenTimsTDF#2](https://github.com/Sigilweaver/OpenTimsTDF/issues/2), [OpenQVD#2](https://github.com/Sigilweaver/OpenQVD/issues/2), [DICOM-Atlas#1](https://github.com/Sigilweaver/DICOM-Atlas/issues/1), [SpecLance#1](https://github.com/Sigilweaver/SpecLance/issues/1)
 
 ## 3. Reach / packaging
 
@@ -56,7 +63,17 @@ is the biggest confidence gap in the suite.
 - [OpenMassSpec#3](https://github.com/Sigilweaver/OpenMassSpec/issues/3) - streaming ingest (don't buffer a whole run in a Vec; a real .wiff hit ~1.15 GB).
 - [OpenSXRaw#3](https://github.com/Sigilweaver/OpenSXRaw/issues/3) - decode m/z calibration + MS2 precursor m/z (the two known-limitations that gate real analysis use).
 
-## 5. Cleanup / loose ends
+## 5. Docs parity
+
+- **Python API reference page missing** on py-binding repos that have docs
+  sites (same gap as [OpenTimsTDF#3](https://github.com/Sigilweaver/OpenTimsTDF/issues/3)):
+  [SpecLance#2](https://github.com/Sigilweaver/SpecLance/issues/2),
+  [SigilYX#25](https://github.com/Sigilweaver/SigilYX/issues/25),
+  [OpenQBW#1](https://github.com/Sigilweaver/OpenQBW/issues/1),
+  [DICOM-Atlas#2](https://github.com/Sigilweaver/DICOM-Atlas/issues/2).
+- [OpenQVD#3](https://github.com/Sigilweaver/OpenQVD/issues/3) - no docs site at all, unlike the sibling readers.
+
+## 6. Cleanup / loose ends
 
 - [OpenARaw#3](https://github.com/Sigilweaver/OpenARaw/issues/3) - remove dead parsers, document always-empty spectrum fields.
 - Standardize a tag/version-match guard across release workflows so a
