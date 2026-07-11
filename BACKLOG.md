@@ -31,12 +31,20 @@ checks; harden them as a family, not one at a time.
   - [OpenKSpace#1](https://github.com/Sigilweaver/OpenKSpace/issues/1) - cap ISMRMRD header-sized allocations (`ns * nc`)
   - [OpenQVD#1](https://github.com/Sigilweaver/OpenQVD/issues/1) - cap QVD length-field allocations (`no_of_symbols`, `n_rows`)
   - Extend the same fuzz treatment to opentfraw / opentimstdf (no issue yet).
-- **Standardize a `cargo audit` / dependency-vuln CI job across the org.**
-  Done for the five MS readers (opentfraw, opentimstdf, openwraw, openaraw,
-  opensxraw). Still missing on genolance / dicom-atlas / openqbw / openqvd /
-  openkspace / opensqlanywhere / speclance / openmassspec / openmassspeccore
-  / sigilyx - a mechanical fix-now rollout (may surface real advisories, each
-  filed as its own issue). Loom is a separate Python dep gate, [Loom#2](https://github.com/Sigilweaver/Loom/issues/2).
+- **`cargo audit` CI job standardized across every Rust repo (done 2026-07-11).**
+  The rollout surfaced a real suite-wide vuln surface. Cleared by lockfile
+  bump: genolance, openkspace (crossbeam-epoch/quinn-proto/rustls-webpki).
+  Clean already: opensqlanywhere, openmassspeccore. The rest ignore genuine
+  upgrade-needed advisories (kept green) with per-repo tracking issues:
+  - **pyo3 -> 0.29** (same migration as OpenTFRaw#20 / OpenTimsTDF#1):
+    [DICOM-Atlas#3](https://github.com/Sigilweaver/DICOM-Atlas/issues/3),
+    [OpenQBW#2](https://github.com/Sigilweaver/OpenQBW/issues/2),
+    [OpenQVD#4](https://github.com/Sigilweaver/OpenQVD/issues/4),
+    [SpecLance#3](https://github.com/Sigilweaver/SpecLance/issues/3),
+    [OpenMassSpec#4](https://github.com/Sigilweaver/OpenMassSpec/issues/4),
+    [SigilYX#26](https://github.com/Sigilweaver/SigilYX/issues/26)
+  - **quick-xml -> 0.41** (breaking API bump): [OpenKSpace#2](https://github.com/Sigilweaver/OpenKSpace/issues/2), plus the four pyo3+quick-xml issues above (OpenQVD/SpecLance/OpenMassSpec/SigilYX).
+  - Loom is a separate Python dep gate, [Loom#2](https://github.com/Sigilweaver/Loom/issues/2).
 
 ## 2. Real CI coverage (cross-cutting)
 
