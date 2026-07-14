@@ -46,9 +46,9 @@ pypi_version = "0.2.0"
 [mass_spectrometry.opentfraw]
 repo = "Sigilweaver/OpenTFRaw"
 crate = "opentfraw"
-crates_version = "1.3.2"
+crates_version = "1.3.3"
 pypi = "opentfraw"
-pypi_version = "1.3.2"
+pypi_version = "1.3.3"
 
 [mass_spectrometry.OpenTimsTDF]
 repo = "Sigilweaver/OpenTimsTDF"
