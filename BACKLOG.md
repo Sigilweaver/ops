@@ -95,10 +95,10 @@ forward instead of this section once it exists.
   [OpenMassSpecCore#1](https://github.com/Sigilweaver/OpenMassSpecCore/issues/1),
   2026-07-15) - but no vendor implements `iter_chromatograms` yet, so
   TIC/BPC/SRM output is still empty in practice until a vendor does.
-  - [OpenWRaw#9](https://github.com/Sigilweaver/OpenWRaw/issues/9) - wire the existing (already-decoded, unused) `chroms.rs` into the trait
+  - ~~[OpenWRaw#9](https://github.com/Sigilweaver/OpenWRaw/issues/9) - wire the existing (already-decoded, unused) `chroms.rs` into the trait~~ closed 2026-07-15 (574fe09); pressure/flow-rate/temperature channels only (units with no matching PSI-MS term are skipped). On main, UNRELEASED.
 - ~~[OpenMassSpecCore#2](https://github.com/Sigilweaver/OpenMassSpecCore/issues/2) - `RunMetadata.start_timestamp` decoded by all five vendors, never written by the shared mzML writer~~ closed 2026-07-15; reaches output automatically once vendors bump to the next core release (no vendor code changes needed).
-- ~~[OpenMassSpecCore#3](https://github.com/Sigilweaver/OpenMassSpecCore/issues/3) - no schema field for FAIMS compensation voltage~~ schema half closed 2026-07-15 (`SpectrumRecord.faims_cv` + writer support added). Vendor half still open: [OpenTFRaw#27](https://github.com/Sigilweaver/OpenTFRaw/issues/27) - wire OpenTFRaw's existing `faims_cv()` accessor into `to_msc_record` once a new core version is published.
-- [OpenWRaw#8](https://github.com/Sigilweaver/OpenWRaw/issues/8) - precursor info hardcoded `None` for every spectrum, including targeted MS/MS functions (biggest single-vendor gap found)
+- ~~[OpenMassSpecCore#3](https://github.com/Sigilweaver/OpenMassSpecCore/issues/3) - no schema field for FAIMS compensation voltage~~ schema half closed 2026-07-15 (`SpectrumRecord.faims_cv` + writer support added). Vendor half done: [OpenTFRaw#27](https://github.com/Sigilweaver/OpenTFRaw/issues/27) closed 2026-07-15 (32d1d0a, released in OpenTFRaw 1.3.4).
+- [OpenWRaw#8](https://github.com/Sigilweaver/OpenWRaw/issues/8) - precursor info hardcoded `None` for every spectrum, including targeted MS/MS functions (biggest single-vendor gap found). Investigated 2026-07-15: the corpus has no genuine targeted-MS/MS sample (all multi-function bundles are HDMSe with `Precursor Selection: Everything`, so `None` is actually correct for every file we have) - blocked on [OpenWRaw#13](https://github.com/Sigilweaver/OpenWRaw/issues/13) (acquire a real DDA/SRM sample). A smaller adjacent win is available regardless: `_FUNCnnn.STS` has fully-decoded per-scan collision energy that no code parses yet.
 - [OpenTimsTDF#13](https://github.com/Sigilweaver/OpenTimsTDF/issues/13) - PRM-PASEF frames decoded but skipped in the mzML projection
 - No vendor computes CCS despite two having raw ion-mobility data:
   [OpenTimsTDF#14](https://github.com/Sigilweaver/OpenTimsTDF/issues/14) (1/K0),
@@ -108,6 +108,22 @@ forward instead of this section once it exists.
 
 ## Done recently (for context)
 
+- OpenTFRaw#27 (2026-07-15, 32d1d0a): wired the existing `ScanParams::faims_cv()`
+  accessor into `to_msc_record` now that openmassspec-core 1.2.0 (with the
+  schema field) is published; released in OpenTFRaw 1.3.4.
+- OpenWRaw#9 (2026-07-15, 574fe09): `WatersSource::iter_chromatograms` now
+  decodes `_CHROMS.INF`/`_CHROnnnn.DAT` into `ChromatogramRecord`, mapping
+  units to a PSI-MS chromatogram-type term (pressure/flow-rate/temperature,
+  verified against psi-ms.obo) and skipping channels with no CV match
+  (composition %, heater power %) rather than mislabeling them. On main,
+  UNRELEASED. Won't produce real mzML output until OpenWRaw cuts a release
+  against openmassspec-core 1.2.0+ (writer support landed in
+  OpenMassSpecCore#1).
+- OpenWRaw#8 investigated (2026-07-15), not fixed: the corpus has no
+  genuine targeted-MS/MS sample, so the issue's "Set Mass" premise doesn't
+  apply to any file we have - opened
+  [OpenWRaw#13](https://github.com/Sigilweaver/OpenWRaw/issues/13) to
+  track acquiring one.
 - OpenMassSpecCore shared-writer fixes (2026-07-15): closed
   [OpenMassSpecCore#1](https://github.com/Sigilweaver/OpenMassSpecCore/issues/1)/[#2](https://github.com/Sigilweaver/OpenMassSpecCore/issues/2)/[#3](https://github.com/Sigilweaver/OpenMassSpecCore/issues/3)
   from the parity audit below - `write_mzml`/`write_indexed_mzml` now
