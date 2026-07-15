@@ -16,11 +16,6 @@ issue are tracked directly in this file until they do.
 The readers all parse untrusted binary input with hand-rolled bounds
 checks; harden them as a family, not one at a time.
 
-- **Loom dependency exposure (urgent).** 15+ open Dependabot alerts ship in
-  Docker images and the desktop binary; the dead `python-jose`/`pyjwt`
-  removal is a clean win that clears the one unfixable `ecdsa` alert.
-  - [Loom#1](https://github.com/Sigilweaver/Loom/issues/1) - update vulnerable pinned deps
-  - [Loom#2](https://github.com/Sigilweaver/Loom/issues/2) - dep-vuln gate + dependabot.yml + pre-release banner
 - **Fuzzing + allocation caps across the reader family.** Allocations sized
   from file-controlled `u32`s (memory-DoS) and no fuzz harnesses over the
   decode paths.
@@ -69,7 +64,6 @@ is the biggest confidence gap in the suite.
 ## 4. Feature depth (bigger, later)
 
 - [OpenMassSpec#3](https://github.com/Sigilweaver/OpenMassSpec/issues/3) - streaming ingest (don't buffer a whole run in a Vec; a real .wiff hit ~1.15 GB).
-- [OpenSXRaw#3](https://github.com/Sigilweaver/OpenSXRaw/issues/3) - decode m/z calibration + MS2 precursor m/z (the two known-limitations that gate real analysis use).
 
 ## 5. Docs parity
 
@@ -83,14 +77,53 @@ is the biggest confidence gap in the suite.
 
 ## 6. Cleanup / loose ends
 
-- [OpenARaw#3](https://github.com/Sigilweaver/OpenARaw/issues/3) - remove dead parsers, document always-empty spectrum fields.
 - Standardize a tag/version-match guard across release workflows so a
   mistagged release can't publish. (No issue yet - small, cross-cutting.)
+
+## 7. Vendor-reader parity / shared-schema completeness
+
+Cross-vendor audit (2026-07-15) found gaps between what each vendor reader
+decodes and what actually survives the shared schema/mzML writer into
+output - some affect every vendor equally (shared-layer bugs), some are
+single-vendor. See [OpenMassSpec#6](https://github.com/Sigilweaver/OpenMassSpec/issues/6)
+for the proposed parity-matrix doc that should track this table going
+forward instead of this section once it exists.
+
+- **Chromatograms are unwired end-to-end.** `ChromatogramRecord`/
+  `iter_chromatograms` exist in the shared schema, and the mzML writer now
+  emits `<chromatogramList>` when a source yields anything (closed
+  [OpenMassSpecCore#1](https://github.com/Sigilweaver/OpenMassSpecCore/issues/1),
+  2026-07-15) - but no vendor implements `iter_chromatograms` yet, so
+  TIC/BPC/SRM output is still empty in practice until a vendor does.
+  - [OpenWRaw#9](https://github.com/Sigilweaver/OpenWRaw/issues/9) - wire the existing (already-decoded, unused) `chroms.rs` into the trait
+- ~~[OpenMassSpecCore#2](https://github.com/Sigilweaver/OpenMassSpecCore/issues/2) - `RunMetadata.start_timestamp` decoded by all five vendors, never written by the shared mzML writer~~ closed 2026-07-15; reaches output automatically once vendors bump to the next core release (no vendor code changes needed).
+- ~~[OpenMassSpecCore#3](https://github.com/Sigilweaver/OpenMassSpecCore/issues/3) - no schema field for FAIMS compensation voltage~~ schema half closed 2026-07-15 (`SpectrumRecord.faims_cv` + writer support added). Vendor half still open: [OpenTFRaw#27](https://github.com/Sigilweaver/OpenTFRaw/issues/27) - wire OpenTFRaw's existing `faims_cv()` accessor into `to_msc_record` once a new core version is published.
+- [OpenWRaw#8](https://github.com/Sigilweaver/OpenWRaw/issues/8) - precursor info hardcoded `None` for every spectrum, including targeted MS/MS functions (biggest single-vendor gap found)
+- [OpenTimsTDF#13](https://github.com/Sigilweaver/OpenTimsTDF/issues/13) - PRM-PASEF frames decoded but skipped in the mzML projection
+- No vendor computes CCS despite two having raw ion-mobility data:
+  [OpenTimsTDF#14](https://github.com/Sigilweaver/OpenTimsTDF/issues/14) (1/K0),
+  [OpenWRaw#10](https://github.com/Sigilweaver/OpenWRaw/issues/10) (TWIMS drift time)
 
 ---
 
 ## Done recently (for context)
 
+- OpenMassSpecCore shared-writer fixes (2026-07-15): closed
+  [OpenMassSpecCore#1](https://github.com/Sigilweaver/OpenMassSpecCore/issues/1)/[#2](https://github.com/Sigilweaver/OpenMassSpecCore/issues/2)/[#3](https://github.com/Sigilweaver/OpenMassSpecCore/issues/3)
+  from the parity audit below - `write_mzml`/`write_indexed_mzml` now
+  emit `<chromatogramList>` (indexed variant gets a second
+  `<index name="chromatogram">` block), `<run startTimeStamp>`, and a
+  scan-level FAIMS compensation-voltage cvParam (new
+  `SpectrumRecord.faims_cv` field). Verified against the vendored PSI-MS
+  XSDs via the extended `emit_sample_mzml` example. On main but
+  UNRELEASED as of core 1.1.1; opened
+  [OpenTFRaw#27](https://github.com/Sigilweaver/OpenTFRaw/issues/27) to
+  wire the FAIMS field into OpenTFRaw's conversion once a new core
+  version ships.
+- Cross-vendor MS-stack parity audit (2026-07-15): confirmed OpenSXRaw#3
+  (calibration + MS2 precursor m/z) and OpenARaw#3 (dead parsers /
+  always-empty fields) were already closed - both removed from the
+  sections above. Surfaced 9 new issues, filed under section 7 above.
 - OpenProteo -> OpenMassSpec / OpenProteoCore -> OpenMassSpecCore rename,
   fully executed (repos, crates, PyPI, docs, DOI-bearing packages).
 - OpenMassSpec 1.1.0: umbrella now covers all five vendors (Thermo, Bruker,
@@ -103,6 +136,9 @@ is the biggest confidence gap in the suite.
   RUSTSEC-2026-0177 and closing OpenTFRaw#20 + OpenTimsTDF#1 (audit ignores
   dropped). The two upgrades are on main but UNRELEASED - published
   crates/wheels still carry 0.22 until a TFRaw 1.3.2 / TimsTDF 1.2.4 cut.
+- Loom dependency exposure closed out (2026-07-12): dead `python-jose`/
+  `pyjwt` removed, dep-vuln CI gate + dependabot.yml + pre-release banner
+  added (Loom#1, Loom#2). Loom#3 (remaining dev-tooling debt) stays open.
 - OpenARaw / OpenSXRaw brought up to the OpenTFRaw maturity standard
   (2026-07-11): `cargo audit` + Docusaurus deploy CI jobs, OpenSXRaw Python
   bindings (`opensxraw-py` + PyPI publish), OpenARaw pyo3 0.28->0.29 (clears
