@@ -70,7 +70,6 @@ crate = "openszraw"
 crates_version = "0.1.0"
 pypi = "openszraw"
 pypi_version = "0.1.0"
-status = "unpublished"
 
 [mass_spectrometry.speclance]
 repo = "Sigilweaver/SpecLance"
