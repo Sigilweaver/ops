@@ -64,6 +64,14 @@ crates_version = "1.2.5"
 pypi = "openwraw"
 pypi_version = "1.2.5"
 
+[mass_spectrometry.openszraw]
+repo = "Sigilweaver/OpenSZRaw"
+crate = "openszraw"
+crates_version = "0.1.0"
+pypi = "openszraw"
+pypi_version = "0.1.0"
+status = "unpublished"
+
 [mass_spectrometry.speclance]
 repo = "Sigilweaver/SpecLance"
 crate = "speclance-core"
