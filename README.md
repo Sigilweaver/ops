@@ -11,6 +11,7 @@ repo, not the projects themselves.
 | --- | --- |
 | [`versions.toml`](versions.toml) | Single source of truth for the currently published version of every Sigilweaver crate, Python package, and supporting repository. Updated as part of each release. |
 | [`BACKLOG.md`](BACKLOG.md) | Suite-level view of what's worth doing next across the projects, grouped by theme and linked to the per-repo GitHub issues. Start here to pick up work. |
+| [`CI_STANDARDS.md`](CI_STANDARDS.md) | What every repo's CI should look like (test-matrix-mirrors-what-you-ship, lint once on Linux) and the platform-specific gotchas to bake in proactively. Gap issues in individual repos link back here. |
 | [`release.toml.template`](release.toml.template) | `cargo-release` configuration template for Sigilweaver Rust workspaces. Copy to a repo root as `release.toml` to opt into coordinated release behavior. |
 | [`scripts/check-versions.sh`](scripts/check-versions.sh) | Verifies each per-project repo's `Cargo.toml` / `pyproject.toml` matches the value recorded in `versions.toml`. |
 
