@@ -134,6 +134,40 @@ smoke test using `.so`/`LD_LIBRARY_PATH`), it's fine to gate it
 the same change - just say so in a comment, and track the portability
 work separately if it's worth doing.
 
+## PyPI publishing: Trusted Publishing only, no stored tokens
+
+Any repo publishing Python packages (wheels or sdists) to PyPI must use
+[Trusted Publishing](https://docs.pypi.org/trusted-publishers/) - OIDC
+via a GitHub Actions `environment`, not a long-lived `PYPI_API_TOKEN`
+secret. It's free to configure (register the publisher on the PyPI
+project's "Trusted Publishers" page, no token to generate, store, or
+rotate) and removes a standing credential that could otherwise leak or
+outlive its need. Concretely, the publish job needs:
+
+```yaml
+publish-pypi:
+  environment:
+    name: pypi
+    url: https://pypi.org/p/<project>
+  permissions:
+    id-token: write
+  steps:
+    - uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        packages-dir: dist
+        skip-existing: true
+```
+
+No `password:`/`api-token:` input to the publish action at all - if one
+is present, the repo is still on the token-based flow and should be
+migrated.
+
+**Audited 2026-07-19: every repo with Python bindings already does
+this correctly** (OpenARaw, OpenSXRaw, OpenSZRaw, OpenWRaw, OpenTFRaw,
+OpenTimsTDF, OpenQVD, OpenQBW, DICOM-Atlas, SpecLance, SigilYX,
+OpenMassSpec, OpenYXDB). No gap issues needed. Re-check this whenever a
+new repo adds a PyPI-published Python package.
+
 ## Current compliance (surveyed 2026-07-19)
 
 | Repo | Tests on | Ships for | Status |
@@ -149,3 +183,10 @@ Gap issues are tracked per-repo and linked from
 [`BACKLOG.md`](BACKLOG.md#2-real-ci-coverage-cross-cutting); this doc is
 the standard they're measured against, update it if the standard
 changes rather than re-litigating it per-issue.
+
+**Out of scope for now:** Loom, Phreddy, Sigilweaver-Synthetic, `keep` -
+all private, pre-release/early-stage repos. Loom does have the same
+build-vs-test-matrix shape of gap (its `build-*.yml` workflows build
+for all three OSes, `ci.yml`'s test job runs Linux-only) and Phreddy has
+no CI at all, but neither is being tracked as a standards violation
+until those repos are further along.
