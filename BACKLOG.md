@@ -65,7 +65,30 @@ is the biggest confidence gap in the suite.
   readers. (No single issue yet - suite-wide.)
 - [OpenARaw#2](https://github.com/Sigilweaver/OpenARaw/issues/2) / [OpenSXRaw#2](https://github.com/Sigilweaver/OpenSXRaw/issues/2) - byte-slice decoder unit tests (corpus-free coverage)
 - [GenoLance#1](https://github.com/Sigilweaver/GenoLance/issues/1) - **no unit tests at all**; CI runs `cargo test` over an empty set
-- **Windows/macOS test-matrix gap** (ships wheels, tests only Linux): [SigilYX#23](https://github.com/Sigilweaver/SigilYX/issues/23). Closed 2026-07-19: OpenQVD#2, DICOM-Atlas#1, SpecLance#1 (OpenWRaw#2 and OpenTimsTDF#2 were already closed previously). OpenQVD and SpecLance went green on the first push. DICOM-Atlas needed two follow-up fixes after the matrix addition actually ran: `dicom-map-py`'s hard-enabled pyo3 `extension-module` feature doesn't link on macOS without `.cargo/config.toml`'s `dynamic_lookup` rustflags (maturin normally papers over this, plain `cargo build` doesn't - pyo3 FAQ), and `tests/roundtrip_fuzz.py` needed the `.exe` suffix plus explicit `encoding="utf-8"` for Windows' cp1252 default. All green as of 8f4605b/fef5975. Worth checking for the same two gotchas before trusting any other repo's first Windows/macOS CI run.
+- **Test-matrix-mirrors-what-you-ship gap**, now documented as the org
+  standard in [`CI_STANDARDS.md`](CI_STANDARDS.md) (test every OS you
+  ship a wheel/binary for; lint once on Linux). Closed 2026-07-19:
+  OpenQVD#2, DICOM-Atlas#1, SpecLance#1 (OpenWRaw#2 and OpenTimsTDF#2
+  were already closed previously). OpenQVD and SpecLance went green on
+  the first push. DICOM-Atlas needed two follow-up fixes after the
+  matrix addition actually ran: `dicom-map-py`'s hard-enabled pyo3
+  `extension-module` feature doesn't link on macOS without
+  `.cargo/config.toml`'s `dynamic_lookup` rustflags (maturin normally
+  papers over this, plain `cargo build` doesn't - pyo3 FAQ), and
+  `tests/roundtrip_fuzz.py` needed the `.exe` suffix plus explicit
+  `encoding="utf-8"` for Windows' cp1252 default. All green as of
+  8f4605b/fef5975. The follow-up compliance survey (also 2026-07-19)
+  found the same gap elsewhere, now tracked:
+  [SigilYX#23](https://github.com/Sigilweaver/SigilYX/issues/23) (no
+  Windows/macOS test at all), [OpenARaw#10](https://github.com/Sigilweaver/OpenARaw/issues/10),
+  [OpenSXRaw#14](https://github.com/Sigilweaver/OpenSXRaw/issues/14),
+  [OpenSZRaw#12](https://github.com/Sigilweaver/OpenSZRaw/issues/12)
+  (no Windows test despite shipping a Windows wheel),
+  [OpenMassSpec#9](https://github.com/Sigilweaver/OpenMassSpec/issues/9)
+  (same, plus fmt/clippy redundantly run on two OSes instead of once),
+  [OpenYXDB#3](https://github.com/Sigilweaver/OpenYXDB/issues/3) (ubuntu-only
+  despite a pixi/C++ toolchain shipping linux+macos+windows - different
+  stack, same standard).
 
 ## 3. Reach / packaging
 
