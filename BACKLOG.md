@@ -31,14 +31,27 @@ checks; harden them as a family, not one at a time.
   bump: genolance, openkspace (crossbeam-epoch/quinn-proto/rustls-webpki).
   Clean already: opensqlanywhere, openmassspeccore. The rest ignore genuine
   upgrade-needed advisories (kept green) with per-repo tracking issues:
-  - **pyo3 -> 0.29** (same migration as OpenTFRaw#20 / OpenTimsTDF#1):
-    [DICOM-Atlas#3](https://github.com/Sigilweaver/DICOM-Atlas/issues/3),
-    [OpenQBW#2](https://github.com/Sigilweaver/OpenQBW/issues/2),
-    [OpenQVD#4](https://github.com/Sigilweaver/OpenQVD/issues/4),
-    [SpecLance#3](https://github.com/Sigilweaver/SpecLance/issues/3),
-    [OpenMassSpec#4](https://github.com/Sigilweaver/OpenMassSpec/issues/4),
-    [SigilYX#26](https://github.com/Sigilweaver/SigilYX/issues/26)
-  - **quick-xml -> 0.41** (breaking API bump): [OpenKSpace#2](https://github.com/Sigilweaver/OpenKSpace/issues/2), plus the four pyo3+quick-xml issues above (OpenQVD/SpecLance/OpenMassSpec/SigilYX).
+  - **pyo3 -> 0.29** (same migration as OpenTFRaw#20 / OpenTimsTDF#1): closed
+    2026-07-19 for DICOM-Atlas#3, OpenQBW#2, OpenQVD#4, SpecLance#3 (all four
+    on main, unreleased). [OpenMassSpec#4](https://github.com/Sigilweaver/OpenMassSpec/issues/4)
+    is half-done (pyo3 side already at 0.29 from an earlier commit) but
+    stays open - the quick-xml half is blocked upstream (see below).
+    [SigilYX#26](https://github.com/Sigilweaver/SigilYX/issues/26) stays
+    open too, blocked upstream: `pyo3-polars` latest published (0.27.0)
+    caps at `pyo3 = "0.28"`, no 0.29-compatible release exists yet.
+  - **quick-xml -> 0.41** (breaking API bump): closed 2026-07-19 for
+    [OpenKSpace#2](https://github.com/Sigilweaver/OpenKSpace/issues/2),
+    OpenQVD#4, SpecLance#3. Two holdouts, both blocked upstream, not
+    fixable from our side:
+    - OpenMassSpec#4 - transitive via `mzdata`, which pins quick-xml 0.30
+      on crates.io. The fix (mobiusklein/mzdata#53) merged to mzdata's
+      main 2026-07-14 but no release has followed since; re-check when
+      mzdata cuts one.
+    - SigilYX#26 - our own direct pin already resolves to 0.41, but
+      Cargo.lock also carries a second, older quick-xml pulled in via
+      `polars-io`'s optional (and inactive) `cloud` feature, which caps
+      `object_store` below the version that would clear it. Blocked on
+      polars-io bumping its `object_store` constraint.
   - Loom is a separate Python dep gate, [Loom#2](https://github.com/Sigilweaver/Loom/issues/2).
 
 ## 2. Real CI coverage (cross-cutting)
@@ -52,7 +65,7 @@ is the biggest confidence gap in the suite.
   readers. (No single issue yet - suite-wide.)
 - [OpenARaw#2](https://github.com/Sigilweaver/OpenARaw/issues/2) / [OpenSXRaw#2](https://github.com/Sigilweaver/OpenSXRaw/issues/2) - byte-slice decoder unit tests (corpus-free coverage)
 - [GenoLance#1](https://github.com/Sigilweaver/GenoLance/issues/1) - **no unit tests at all**; CI runs `cargo test` over an empty set
-- **Windows/macOS test-matrix gap** (ships wheels, tests only Linux): [SigilYX#23](https://github.com/Sigilweaver/SigilYX/issues/23), [OpenWRaw#2](https://github.com/Sigilweaver/OpenWRaw/issues/2), [OpenTimsTDF#2](https://github.com/Sigilweaver/OpenTimsTDF/issues/2), [OpenQVD#2](https://github.com/Sigilweaver/OpenQVD/issues/2), [DICOM-Atlas#1](https://github.com/Sigilweaver/DICOM-Atlas/issues/1), [SpecLance#1](https://github.com/Sigilweaver/SpecLance/issues/1)
+- **Windows/macOS test-matrix gap** (ships wheels, tests only Linux): [SigilYX#23](https://github.com/Sigilweaver/SigilYX/issues/23). Closed 2026-07-19: OpenQVD#2, DICOM-Atlas#1, SpecLance#1 (OpenWRaw#2 and OpenTimsTDF#2 were already closed previously). All three additions are unverified against a real Actions run (matrix entries added, portability fixes made where an obvious one was needed - e.g. DICOM-Atlas's CI scripts assumed bash/GNU tools, SpecLance's wheel-install step needed `shell: bash` - but nobody's watched them go green yet).
 
 ## 3. Reach / packaging
 
@@ -108,6 +121,16 @@ forward instead of this section once it exists.
 
 ## Done recently (for context)
 
+- Security batch (2026-07-19): pyo3/quick-xml audit cleanup across six
+  repos. Closed: OpenKSpace#2 (quick-xml), OpenQBW#2 (pyo3), DICOM-Atlas#3
+  + #1 (pyo3, Windows/macOS CI), OpenQVD#4 + #2 (quick-xml+pyo3, Windows/
+  macOS CI - required an arrow 58->59 bump alongside pyo3-arrow), SpecLance#3
+  + #1 (quick-xml+pyo3, Windows/macOS CI). Investigated and left open,
+  blocked upstream: SigilYX#26 (pyo3-polars caps pyo3 at 0.28; polars-io's
+  inactive `cloud` feature pins an old quick-xml transitively) and
+  OpenMassSpec#4 (mzdata's quick-xml fix is merged upstream but unreleased -
+  see the mzdata note above). Also closed OpenTFRaw#22 (docs/guide/reader.md
+  field-table drift, regenerated from the struct).
 - OpenTFRaw#27 (2026-07-15, 32d1d0a): wired the existing `ScanParams::faims_cv()`
   accessor into `to_msc_record` now that openmassspec-core 1.2.0 (with the
   schema field) is published; released in OpenTFRaw 1.3.4.
