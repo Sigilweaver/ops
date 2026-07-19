@@ -134,9 +134,17 @@ forward instead of this section once it exists.
   `iter_chromatograms` exist in the shared schema, and the mzML writer now
   emits `<chromatogramList>` when a source yields anything (closed
   [OpenMassSpecCore#1](https://github.com/Sigilweaver/OpenMassSpecCore/issues/1),
-  2026-07-15) - but no vendor implements `iter_chromatograms` yet, so
-  TIC/BPC/SRM output is still empty in practice until a vendor does.
+  2026-07-15) - but only OpenWRaw implements `iter_chromatograms`, so
+  TIC/BPC/SRM output is still empty in practice for the other five
+  vendors. Per-vendor gap issues filed 2026-07-19, each investigated for
+  whether the data is already decoded-but-unused (small wire-up) or needs
+  net-new decode/aggregation work (larger):
   - ~~[OpenWRaw#9](https://github.com/Sigilweaver/OpenWRaw/issues/9) - wire the existing (already-decoded, unused) `chroms.rs` into the trait~~ closed 2026-07-15 (574fe09); pressure/flow-rate/temperature channels only (units with no matching PSI-MS term are skipped). On main, UNRELEASED.
+  - [OpenTFRaw#39](https://github.com/Sigilweaver/OpenTFRaw/issues/39) - TIC/BPC/SRM all already fully decoded (`ScanIndexEntry`, unused `tic_chromatogram()`/`bpc_chromatogram()` helpers, SRM transition grouping) - pure wire-up, smallest of the five.
+  - [OpenTimsTDF#25](https://github.com/Sigilweaver/OpenTimsTDF/issues/25) - TIC decoded-but-unused (small wire-up); BPC needs one new field selected from the `Frames` table (small addition); SRM/PRM needs new aggregation across frames per target (larger).
+  - [OpenSXRaw#21](https://github.com/Sigilweaver/OpenSXRaw/issues/21) - TIC decoded-but-discarded in `reader.rs` (small wire-up); BPC and SRM need new decode/aggregation work, scoped as follow-ups.
+  - [OpenARaw#17](https://github.com/Sigilweaver/OpenARaw/issues/17) - no chromatogram data decoded yet; needs new aggregation code reusing already-parsed scan fields (no new binary-format RE, but real new code).
+  - OpenSZRaw - no new issue; already-open [OpenSZRaw#2](https://github.com/Sigilweaver/OpenSZRaw/issues/2) (PDA/LSS chromatogram payload decode) already scopes the `iter_chromatograms` wiring as part of its done-criteria.
 - ~~[OpenMassSpecCore#2](https://github.com/Sigilweaver/OpenMassSpecCore/issues/2) - `RunMetadata.start_timestamp` decoded by all five vendors, never written by the shared mzML writer~~ closed 2026-07-15; reaches output automatically once vendors bump to the next core release (no vendor code changes needed).
 - ~~[OpenMassSpecCore#3](https://github.com/Sigilweaver/OpenMassSpecCore/issues/3) - no schema field for FAIMS compensation voltage~~ schema half closed 2026-07-15 (`SpectrumRecord.faims_cv` + writer support added). Vendor half done: [OpenTFRaw#27](https://github.com/Sigilweaver/OpenTFRaw/issues/27) closed 2026-07-15 (32d1d0a, released in OpenTFRaw 1.3.4).
 - [OpenWRaw#8](https://github.com/Sigilweaver/OpenWRaw/issues/8) - precursor info hardcoded `None` for every spectrum, including targeted MS/MS functions (biggest single-vendor gap found). Investigated 2026-07-15: the corpus has no genuine targeted-MS/MS sample (all multi-function bundles are HDMSe with `Precursor Selection: Everything`, so `None` is actually correct for every file we have) - blocked on [OpenWRaw#13](https://github.com/Sigilweaver/OpenWRaw/issues/13) (acquire a real DDA/SRM sample). A smaller adjacent win is available regardless: `_FUNCnnn.STS` has fully-decoded per-scan collision energy that no code parses yet.
