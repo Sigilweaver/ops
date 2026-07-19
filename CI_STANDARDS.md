@@ -168,16 +168,68 @@ OpenTimsTDF, OpenQVD, OpenQBW, DICOM-Atlas, SpecLance, SigilYX,
 OpenMassSpec, OpenYXDB). No gap issues needed. Re-check this whenever a
 new repo adds a PyPI-published Python package.
 
-## Current compliance (surveyed 2026-07-19)
+## Concurrency: cancel superseded runs
+
+Every `ci.yml` must set a top-level `concurrency` group so that pushing
+new commits to the same branch/PR cancels the older, now-superseded run
+instead of letting it finish. Pure cost reduction, no tradeoff - a run
+that's already obsolete by the time it finishes wastes Actions minutes
+for zero signal.
+
+```yaml
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+```
+
+Keep the group keyed on `github.workflow` + `github.ref` exactly, not a
+hardcoded string like `ci-${{ github.ref }}` - a few repos had drifted
+to a non-standard group name and were normalized back to this during
+the 2026-07-19 rollout.
+
+**Rolled out 2026-07-19 to every repo in scope** (see compliance table
+below). SigilYX already had it from an earlier PR.
+
+## Dependabot: keep dependencies patched automatically
+
+Every repo needs `.github/dependabot.yml` covering every ecosystem it
+actually has a manifest for - always `github-actions`, plus `cargo`
+(Cargo.toml), `pip` (pyproject.toml/requirements*.txt), `npm`
+(package.json, usually the `docs/` site), or `docker` (Dockerfile) as
+applicable. One entry per manifest location, `directory` pointing at
+where that manifest actually lives (not always repo root - e.g. a
+pyo3 bindings crate or a docs/ Docusaurus site each get their own
+entry), weekly schedule:
+
+```yaml
+version: 2
+updates:
+  - package-ecosystem: "<ecosystem>"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+```
+
+Note: pixi/conda-managed repos have no dependabot ecosystem for that
+toolchain (OpenYXDB) - just cover whatever pip/npm/github-actions
+manifests exist alongside it, don't force a nonexistent ecosystem.
+
+**Rolled out 2026-07-19 to every repo in scope.** This existed
+nowhere except SigilYX before the rollout (and even there it was
+missing the docs/ npm entry, since fixed).
+
+## Current compliance (surveyed 2026-07-19, updated same day after the
+concurrency/dependabot rollout)
 
 | Repo | Tests on | Ships for | Status |
 |---|---|---|---|
-| OpenTFRaw, OpenTimsTDF, OpenQVD, OpenQBW, SpecLance, DICOM-Atlas | ubuntu + macos + windows | same | matches |
+| OpenTFRaw, OpenTimsTDF, OpenQVD, OpenQBW, SpecLance, DICOM-Atlas, SigilYX, OpenMassSpec, OpenYXDB | ubuntu + macos + windows | same | matches |
 | OpenARaw, OpenSXRaw, OpenSZRaw | ubuntu + macos | ubuntu + macos + windows | gap - no Windows test job |
-| OpenMassSpec | ubuntu + macos | ubuntu + macos + windows | gap - no Windows test job (Rust *and* Python) |
-| SigilYX | ubuntu only | ubuntu + macos + windows | gap - tracked as [SigilYX#23](https://github.com/Sigilweaver/SigilYX/issues/23) |
-| OpenYXDB | ubuntu only (pixi/C++ toolchain, not cargo) | linux + macos + windows | gap - different toolchain, the pyo3-specific fixes above don't apply |
 | OpenKSpace, GenoLance | ubuntu (+macos for OpenKSpace) | crates.io only, no wheels | no gap - nothing platform-specific ships |
+
+SigilYX (#23), OpenYXDB (#3), and OpenMassSpec's Windows job all
+closed out via separate PRs merged the same day as this rollout - only
+OpenARaw/OpenSXRaw/OpenSZRaw's Windows gap remains open.
 
 Gap issues are tracked per-repo and linked from
 [`BACKLOG.md`](BACKLOG.md#2-real-ci-coverage-cross-cutting); this doc is
