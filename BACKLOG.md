@@ -25,7 +25,11 @@ checks; harden them as a family, not one at a time.
   - [OpenWRaw#3](https://github.com/Sigilweaver/OpenWRaw/issues/3) - cap untrusted allocations + fuzz harness (~71 unwraps, 16 unbounded allocs)
   - [OpenKSpace#1](https://github.com/Sigilweaver/OpenKSpace/issues/1) - cap ISMRMRD header-sized allocations (`ns * nc`)
   - [OpenQVD#1](https://github.com/Sigilweaver/OpenQVD/issues/1) - cap QVD length-field allocations (`no_of_symbols`, `n_rows`)
-  - Extend the same fuzz treatment to opentfraw / opentimstdf (no issue yet).
+  - OpenTFRaw and OpenTimsTDF now covered too: OpenTFRaw#23 (closed
+    2026-07-19, `crates/opentfraw/fuzz`) and OpenTimsTDF#7 (closed
+    2026-07-14, extended the pre-existing `decode_codec2` harness to the
+    raw block-length read path). Fuzz treatment is now rolled out across
+    the whole reader family.
 - **`cargo audit` CI job standardized across every Rust repo (done 2026-07-11).**
   The rollout surfaced a real suite-wide vuln surface. Cleared by lockfile
   bump: genolance, openkspace (crossbeam-epoch/quinn-proto/rustls-webpki).
@@ -33,20 +37,17 @@ checks; harden them as a family, not one at a time.
   upgrade-needed advisories (kept green) with per-repo tracking issues:
   - **pyo3 -> 0.29** (same migration as OpenTFRaw#20 / OpenTimsTDF#1): closed
     2026-07-19 for DICOM-Atlas#3, OpenQBW#2, OpenQVD#4, SpecLance#3 (all four
-    on main, unreleased). [OpenMassSpec#4](https://github.com/Sigilweaver/OpenMassSpec/issues/4)
-    is half-done (pyo3 side already at 0.29 from an earlier commit) but
-    stays open - the quick-xml half is blocked upstream (see below).
+    on main, unreleased), and for [OpenMassSpec#4](https://github.com/Sigilweaver/OpenMassSpec/issues/4)
+    (pyo3 side landed in an earlier commit; see below for the quick-xml half).
     [SigilYX#26](https://github.com/Sigilweaver/SigilYX/issues/26) stays
     open too, blocked upstream: `pyo3-polars` latest published (0.27.0)
     caps at `pyo3 = "0.28"`, no 0.29-compatible release exists yet.
   - **quick-xml -> 0.41** (breaking API bump): closed 2026-07-19 for
     [OpenKSpace#2](https://github.com/Sigilweaver/OpenKSpace/issues/2),
-    OpenQVD#4, SpecLance#3. Two holdouts, both blocked upstream, not
-    fixable from our side:
-    - OpenMassSpec#4 - transitive via `mzdata`, which pins quick-xml 0.30
-      on crates.io. The fix (mobiusklein/mzdata#53) merged to mzdata's
-      main 2026-07-14 but no release has followed since; re-check when
-      mzdata cuts one.
+    OpenQVD#4, SpecLance#3, and now also OpenMassSpec#4 - `mzdata` cut
+    0.65.4 on 2026-07-14 with the quick-xml 0.41 bump (mobiusklein/mzdata#53),
+    OpenMassSpec#11 picked it up 2026-07-19, `cargo audit` is clean.
+    One holdout remains, blocked upstream, not fixable from our side:
     - SigilYX#26 - our own direct pin already resolves to 0.41, but
       Cargo.lock also carries a second, older quick-xml pulled in via
       `polars-io`'s optional (and inactive) `cloud` feature, which caps
@@ -60,9 +61,12 @@ Every reader's conformance tests currently *skip* on CI because the corpus
 is out of tree, so decode paths aren't exercised anywhere automated. This
 is the biggest confidence gap in the suite.
 
-- Check in a small curated fixture corpus (or fetch via the existing
-  `fetch_corpus.py`) so conformance runs for real on CI. Affects all
-  readers. (No single issue yet - suite-wide.)
+- [OpenMassSpec#5](https://github.com/Sigilweaver/OpenMassSpec/issues/5) -
+  wire `fetch_corpus.py` into CI (or check in a small curated fixture
+  corpus) so conformance tests run for real instead of skipping. Affects
+  all readers: OpenTFRaw, OpenTimsTDF, OpenARaw, OpenSXRaw, OpenWRaw, and
+  OpenMassSpec itself all currently skip silently on a plain checkout.
+  Proposed as suite-wide with OpenTFRaw as the first per-repo target.
 - [OpenARaw#2](https://github.com/Sigilweaver/OpenARaw/issues/2) / [OpenSXRaw#2](https://github.com/Sigilweaver/OpenSXRaw/issues/2) - byte-slice decoder unit tests (corpus-free coverage)
 - [GenoLance#1](https://github.com/Sigilweaver/GenoLance/issues/1) - **no unit tests at all**; CI runs `cargo test` over an empty set
 - **Test-matrix-mirrors-what-you-ship gap**, now documented as the org
@@ -83,7 +87,8 @@ is the biggest confidence gap in the suite.
   Windows/macOS test at all), [OpenARaw#10](https://github.com/Sigilweaver/OpenARaw/issues/10),
   [OpenSXRaw#14](https://github.com/Sigilweaver/OpenSXRaw/issues/14),
   [OpenSZRaw#12](https://github.com/Sigilweaver/OpenSZRaw/issues/12)
-  (no Windows test despite shipping a Windows wheel),
+  (no Windows test despite shipping a Windows wheel - all three closed
+  2026-07-19, `ci.yml` now runs the full ubuntu/macos/windows matrix),
   [OpenMassSpec#9](https://github.com/Sigilweaver/OpenMassSpec/issues/9)
   (same, plus fmt/clippy redundantly run on two OSes instead of once),
   [OpenYXDB#3](https://github.com/Sigilweaver/OpenYXDB/issues/3) (ubuntu-only
@@ -144,16 +149,32 @@ forward instead of this section once it exists.
 
 ## Done recently (for context)
 
+- OpenMassSpec#4 closed (2026-07-19, OpenMassSpec#11): `mzdata` cut
+  0.65.4 with its quick-xml 0.41 bump (mobiusklein/mzdata#53, merged
+  2026-07-14); bumping the dependency was the whole fix, no source
+  changes needed. `cargo audit` now clean suite-wide - no repo still
+  carries an ignored quick-xml/pyo3 advisory.
+- OpenARaw#10 / OpenSXRaw#14 / OpenSZRaw#12 closed (2026-07-19): all
+  three now test on the full ubuntu/macos/windows matrix, closing the
+  last Windows-CI gap in [`CI_STANDARDS.md`](CI_STANDARDS.md)'s
+  compliance table - every repo that ships a Windows wheel now tests on
+  Windows.
+- Fuzz treatment reached the last two vendor readers: OpenTFRaw#23
+  (2026-07-19) added unit tests plus a `cargo-fuzz` harness
+  (`crates/opentfraw/fuzz`); OpenTimsTDF#7 (2026-07-14) capped the raw
+  block-length read path and extended the existing `decode_codec2`
+  harness to cover it. Every reader in the family now has both
+  allocation caps and a fuzz target.
 - Security batch (2026-07-19): pyo3/quick-xml audit cleanup across six
   repos. Closed: OpenKSpace#2 (quick-xml), OpenQBW#2 (pyo3), DICOM-Atlas#3
   + #1 (pyo3, Windows/macOS CI), OpenQVD#4 + #2 (quick-xml+pyo3, Windows/
   macOS CI - required an arrow 58->59 bump alongside pyo3-arrow), SpecLance#3
   + #1 (quick-xml+pyo3, Windows/macOS CI). Investigated and left open,
   blocked upstream: SigilYX#26 (pyo3-polars caps pyo3 at 0.28; polars-io's
-  inactive `cloud` feature pins an old quick-xml transitively) and
-  OpenMassSpec#4 (mzdata's quick-xml fix is merged upstream but unreleased -
-  see the mzdata note above). Also closed OpenTFRaw#22 (docs/guide/reader.md
-  field-table drift, regenerated from the struct).
+  inactive `cloud` feature pins an old quick-xml transitively). OpenMassSpec#4
+  was left open at the time (mzdata's quick-xml fix was merged upstream but
+  unreleased) - since closed, see above. Also closed OpenTFRaw#22
+  (docs/guide/reader.md field-table drift, regenerated from the struct).
 - OpenTFRaw#27 (2026-07-15, 32d1d0a): wired the existing `ScanParams::faims_cv()`
   accessor into `to_msc_record` now that openmassspec-core 1.2.0 (with the
   schema field) is published; released in OpenTFRaw 1.3.4.

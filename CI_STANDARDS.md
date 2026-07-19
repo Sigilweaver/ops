@@ -223,13 +223,13 @@ concurrency/dependabot rollout)
 
 | Repo | Tests on | Ships for | Status |
 |---|---|---|---|
-| OpenTFRaw, OpenTimsTDF, OpenQVD, OpenQBW, SpecLance, DICOM-Atlas, SigilYX, OpenMassSpec, OpenYXDB | ubuntu + macos + windows | same | matches |
-| OpenARaw, OpenSXRaw, OpenSZRaw | ubuntu + macos | ubuntu + macos + windows | gap - no Windows test job |
+| OpenTFRaw, OpenTimsTDF, OpenQVD, OpenQBW, SpecLance, DICOM-Atlas, SigilYX, OpenMassSpec, OpenYXDB, OpenARaw, OpenSXRaw, OpenSZRaw | ubuntu + macos + windows | same | matches |
 | OpenKSpace, GenoLance | ubuntu (+macos for OpenKSpace) | crates.io only, no wheels | no gap - nothing platform-specific ships |
 
-SigilYX (#23), OpenYXDB (#3), and OpenMassSpec's Windows job all
-closed out via separate PRs merged the same day as this rollout - only
-OpenARaw/OpenSXRaw/OpenSZRaw's Windows gap remains open.
+SigilYX (#23), OpenYXDB (#3), OpenMassSpec's Windows job, and
+OpenARaw/OpenSXRaw/OpenSZRaw (#10/#14/#12) all closed out via separate
+PRs merged 2026-07-19. Every repo in scope now matches the standard -
+no open test-matrix gaps as of 2026-07-19.
 
 Gap issues are tracked per-repo and linked from
 [`BACKLOG.md`](BACKLOG.md#2-real-ci-coverage-cross-cutting); this doc is
