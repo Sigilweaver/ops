@@ -18,11 +18,11 @@
 [mass_spectrometry.openmassspec]
 repo = "Sigilweaver/OpenMassSpec"
 crate = "openmassspec-io"
-crates_version = "1.5.0"
+crates_version = "1.5.1"
 cli_crate = "openmassspec-io-cli"
-cli_version = "1.5.0"
+cli_version = "1.5.1"
 pypi = "openmassspec"
-pypi_version = "1.5.0"
+pypi_version = "1.5.1"
 
 [mass_spectrometry.openmassspec-core]
 repo = "Sigilweaver/OpenMassSpecCore"
