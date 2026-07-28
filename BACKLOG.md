@@ -55,7 +55,43 @@ checks; harden them as a family, not one at a time.
       polars-io bumping its `object_store` constraint.
   - Loom is a separate Python dep gate, [Loom#2](https://github.com/Sigilweaver/Loom/issues/2).
 
-## 2. Real CI coverage (cross-cutting)
+## 2. Core 1.4.0 adaptation wave (in progress)
+
+Four PRs from the contractor merged 2026-07-28 into `openmassspec-core`
+(#12-15: acquisition-software provenance, SHA-1 test coverage, zlib
+compression default, peak-picking processing step), two of them
+source-breaking. Same pattern as the 2026-07-25 core-1.3.0 wave (section
+7 below) - release the core bump, then every downstream repo needs a
+small `RunMetadata` construction-site fix before it can pick it up.
+
+- [OpenMassSpecCore#16](https://github.com/Sigilweaver/OpenMassSpecCore/issues/16) -
+  cut the 1.4.0 release itself (still sitting `Unreleased` in CHANGELOG.md)
+- Downstream `RunMetadata` fixes, blocked on the above:
+  [OpenARaw#26](https://github.com/Sigilweaver/OpenARaw/issues/26),
+  [OpenSXRaw#31](https://github.com/Sigilweaver/OpenSXRaw/issues/31),
+  [OpenSZRaw#30](https://github.com/Sigilweaver/OpenSZRaw/issues/30)
+  (four construction sites, one per instrument variant),
+  [OpenTFRaw#47](https://github.com/Sigilweaver/OpenTFRaw/issues/47),
+  [OpenTimsTDF#31](https://github.com/Sigilweaver/OpenTimsTDF/issues/31),
+  [OpenWRaw#25](https://github.com/Sigilweaver/OpenWRaw/issues/25),
+  [OpenMassSpec#22](https://github.com/Sigilweaver/OpenMassSpec/issues/22)
+  (test fixture only, no production code affected)
+- Also fixed in the same pass: OpenMassSpec's MSRV CI job was red
+  (pre-existing, unrelated to the above) - `libsqlite3-sys 0.38.x`
+  (pulled in transitively via `opentimstdf`'s `rusqlite ^0.40`, reachable
+  only through the optional `bruker`/`all` feature) uses the `cfg_select!`
+  macro stabilized in Rust 1.95. Bumped `rust-version`/the MSRV job from
+  1.88 to 1.95 ([691a6ca](https://github.com/Sigilweaver/OpenMassSpec/commit/691a6ca));
+  verified clean against the real 1.95 toolchain. Not raised as an
+  org-wide `policy.msrv` change (`versions.toml`) since no other repo is
+  actually forced off 1.88 yet - see the two gap issues below.
+  [OpenTimsTDF#32](https://github.com/Sigilweaver/OpenTimsTDF/issues/32)
+  and [OpenQBW#12](https://github.com/Sigilweaver/OpenQBW/issues/12) both
+  have the same mandatory (non-optional) `rusqlite`-bundled dependency
+  and no MSRV CI job at all yet to catch it - filed so whoever adds one
+  pins 1.95 from the start instead of landing red on day one.
+
+## 3. Real CI coverage (cross-cutting)
 
 Every reader's conformance tests currently *skip* on CI because the corpus
 is out of tree, so decode paths aren't exercised anywhere automated. This
@@ -96,18 +132,18 @@ is the biggest confidence gap in the suite.
   despite a pixi/C++ toolchain shipping linux+macos+windows - different
   stack, same standard).
 
-## 3. Reach / packaging
+## 4. Reach / packaging
 
 - [OpenMassSpec#2](https://github.com/Sigilweaver/OpenMassSpec/issues/2) - conda-forge feedstock for openmassspec-io + openmassspec (RELEASING.md documents the SOP). `openmassspec-io` staged-recipes PR open: [conda-forge/staged-recipes#34167](https://github.com/conda-forge/staged-recipes/pull/34167) (replaces the stale pre-rename #34069, closed). `openmassspec` facade recipe still to follow once `openmassspec-io` merges (its `run:` dep needs the feedstock to exist for the solver).
 - **Zenodo / DOI reconciliation.** The OpenProteo -> OpenMassSpec rename may
   have left stale record titles; mint DOIs for the newly published openaraw
   / opensxraw. Manual (web UI). (No issue - not code.)
 
-## 4. Feature depth (bigger, later)
+## 5. Feature depth (bigger, later)
 
 - [OpenMassSpec#3](https://github.com/Sigilweaver/OpenMassSpec/issues/3) - streaming ingest (don't buffer a whole run in a Vec; a real .wiff hit ~1.15 GB).
 
-## 5. Docs parity
+## 6. Docs parity
 
 - **Python API reference page missing** on py-binding repos that have docs
   sites (same gap as [OpenTimsTDF#3](https://github.com/Sigilweaver/OpenTimsTDF/issues/3)):
@@ -117,12 +153,12 @@ is the biggest confidence gap in the suite.
   [DICOM-Atlas#2](https://github.com/Sigilweaver/DICOM-Atlas/issues/2).
 - [OpenQVD#3](https://github.com/Sigilweaver/OpenQVD/issues/3) - no docs site at all, unlike the sibling readers.
 
-## 6. Cleanup / loose ends
+## 7. Cleanup / loose ends
 
 - Standardize a tag/version-match guard across release workflows so a
   mistagged release can't publish. (No issue yet - small, cross-cutting.)
 
-## 7. Vendor-reader parity / shared-schema completeness
+## 8. Vendor-reader parity / shared-schema completeness
 
 Cross-vendor audit (2026-07-15) found gaps between what each vendor reader
 decodes and what actually survives the shared schema/mzML writer into
@@ -190,7 +226,7 @@ above (OpenTFRaw#39, OpenWRaw#8/#13 were already closed but still shown
 open) and confirmed OpenMassSpec's version pins and per-vendor API
 surface have no drift.
 
-## 8. Suite expansion - new vendor candidates
+## 9. Suite expansion - new vendor candidates
 
 Considered by instrument market share, not just tooling gaps. **Hard
 requirement for any candidate below: a corpus of real files must be
@@ -274,7 +310,7 @@ SCIEX, Bruker, Shimadzu) cover roughly the top tier already.
   only) and FAIMS row (Thermo "yes", closed #27); updated OpenMassSpec#5.
   `openmassspec-io` bumped to build against all six new versions,
   `STACK.md` regenerated, `versions.toml` updated. Net effect: the
-  schema blocker on OpenTimsTDF#14/OpenWRaw#10 (CCS math, section 7
+  schema blocker on OpenTimsTDF#14/OpenWRaw#10 (CCS math, section 8
   above) is now fully cleared - both are pure vendor-side math work.
 - OpenMassSpec#4 closed (2026-07-19, OpenMassSpec#11): `mzdata` cut
   0.65.4 with its quick-xml 0.41 bump (mobiusklein/mzdata#53, merged
@@ -333,7 +369,7 @@ SCIEX, Bruker, Shimadzu) cover roughly the top tier already.
 - Cross-vendor MS-stack parity audit (2026-07-15): confirmed OpenSXRaw#3
   (calibration + MS2 precursor m/z) and OpenARaw#3 (dead parsers /
   always-empty fields) were already closed - both removed from the
-  sections above. Surfaced 9 new issues, filed under section 7 above.
+  sections above. Surfaced 9 new issues, filed under section 8 above.
 - OpenProteo -> OpenMassSpec / OpenProteoCore -> OpenMassSpecCore rename,
   fully executed (repos, crates, PyPI, docs, DOI-bearing packages).
 - OpenMassSpec 1.1.0: umbrella now covers all five vendors (Thermo, Bruker,
