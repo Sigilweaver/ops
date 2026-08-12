@@ -18,58 +18,58 @@
 [mass_spectrometry.openmassspec]
 repo = "Sigilweaver/OpenMassSpec"
 crate = "openmassspec-io"
-crates_version = "1.5.2"
+crates_version = "1.5.4"
 cli_crate = "openmassspec-io-cli"
-cli_version = "1.5.2"
+cli_version = "1.5.4"
 pypi = "openmassspec"
-pypi_version = "1.5.2"
+pypi_version = "1.5.4"
 
 [mass_spectrometry.openmassspec-core]
 repo = "Sigilweaver/OpenMassSpecCore"
 crate = "openmassspec-core"
-crates_version = "1.4.0"
+crates_version = "1.5.0"
 
 [mass_spectrometry.openaraw]
 repo = "Sigilweaver/OpenARaw"
 crate = "openaraw"
-crates_version = "0.1.6"
+crates_version = "0.1.7"
 pypi = "openaraw"
-pypi_version = "0.1.6"
+pypi_version = "0.1.7"
 
 [mass_spectrometry.opensxraw]
 repo = "Sigilweaver/OpenSXRaw"
 crate = "opensxraw"
-crates_version = "0.2.4"
+crates_version = "0.2.5"
 pypi = "opensxraw"
-pypi_version = "0.2.4"
+pypi_version = "0.2.5"
 
 [mass_spectrometry.opentfraw]
 repo = "Sigilweaver/OpenTFRaw"
 crate = "opentfraw"
-crates_version = "1.3.7"
+crates_version = "1.4.0"
 pypi = "opentfraw"
-pypi_version = "1.3.7"
+pypi_version = "1.4.0"
 
 [mass_spectrometry.OpenTimsTDF]
 repo = "Sigilweaver/OpenTimsTDF"
 crate = "OpenTimsTDF"
-crates_version = "1.3.2"
+crates_version = "1.3.3"
 pypi = "opentimstdf"
-pypi_version = "1.3.2"
+pypi_version = "1.3.3"
 
 [mass_spectrometry.openwraw]
 repo = "Sigilweaver/OpenWRaw"
 crate = "openwraw"
-crates_version = "1.2.8"
+crates_version = "1.2.9"
 pypi = "openwraw"
-pypi_version = "1.2.8"
+pypi_version = "1.2.9"
 
 [mass_spectrometry.openszraw]
 repo = "Sigilweaver/OpenSZRaw"
 crate = "openszraw"
-crates_version = "0.1.3"
+crates_version = "0.1.4"
 pypi = "openszraw"
-pypi_version = "0.1.3"
+pypi_version = "0.1.4"
 
 [mass_spectrometry.speclance]
 repo = "Sigilweaver/SpecLance"

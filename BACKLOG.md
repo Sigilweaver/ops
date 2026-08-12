@@ -51,27 +51,27 @@ advisory (SigilYX#26 below).
       polars-io bumping its `object_store` constraint.
   - ~~Loom is a separate Python dep gate, [Loom#2](https://github.com/Sigilweaver/Loom/issues/2)~~ closed 2026-07-12 (dep-vuln gate + dependabot.yml + pre-release banner landed).
 
-## 2. Vendor-extras adaptation wave (next)
+## 2. Vendor-extras adaptation wave (done 2026-08-12)
 
-The core-1.4.0 adaptation wave is **done** - all seven downstream
-`RunMetadata` fixes and both MSRV-gap issues closed, 1.4.0 released, six
-vendor readers re-bumped (see "Done recently"). The next core change is
-already staged on `main`:
+The core-1.4.0 wave and the follow-on **vendor-extras wave are both done**
+(see "Done recently"). OpenMassSpecCore#18 (the "Option C" decision from
+[#17](https://github.com/Sigilweaver/OpenMassSpecCore/issues/17)) added
+`SpectrumRecord::extra` / `RunMetadata::extra` (namespaced reader-specific
+string metadata) and `SpectrumRecord::acquisition_event_id` (typed numeric
+grouping id), projected as mzML `userParam`s. Core 1.5.0 was cut, all six
+readers adapted (fields defaulted - none populated yet) and released, and
+the umbrella (openmassspec-io / openmassspec 1.5.4) re-pinned to the whole
+new stack.
 
-- [OpenMassSpecCore#18](https://github.com/Sigilweaver/OpenMassSpecCore/pull/18)
-  merged 2026-08-11 (the "Option C" decision from
-  [#17](https://github.com/Sigilweaver/OpenMassSpecCore/issues/17)): added
-  `SpectrumRecord::extra` / `RunMetadata::extra` (namespaced
-  reader-specific string metadata) and `SpectrumRecord::acquisition_event_id`
-  (typed numeric grouping id); the mzML writer projects both as
-  `userParam`s. Sits in core's `[Unreleased]` CHANGELOG - **not yet cut as
-  a release**. Acquisition *mode* is explicitly deferred (still tracked by
-  the open umbrella proposal #17).
-- Next step, same shape as every prior wave: cut the core release carrying
-  #18, then a downstream pass where each vendor reader can populate
-  `extra`/`acquisition_event_id` from fields it already decodes - this is
-  where several of the section-8 decoded-but-unused fields finally get a
-  home. No downstream issues filed yet; file them when the release is cut.
+Remaining follow-ups (not started):
+
+- **Populate** `extra` / `acquisition_event_id` from real decoded vendor
+  data. The 1.5.0 wave only defaulted them (empty / `None`) for
+  compile-compatibility; the actual population from already-decoded fields
+  is where several section-8 decoded-but-unused fields would finally get a
+  home. No issues filed yet.
+- Acquisition *mode* remains deferred, still tracked by the open umbrella
+  proposal [#17](https://github.com/Sigilweaver/OpenMassSpecCore/issues/17).
 
 ## 3. Real CI coverage (cross-cutting) - DONE
 
@@ -267,6 +267,26 @@ SCIEX, Bruker, Shimadzu) cover roughly the top tier already.
 
 ## Done recently (for context)
 
+- **Vendor-extras wave + full stack release train (2026-08-12).** Cut and
+  published the whole stack: openmassspec-core 1.5.0 (crates.io), the six
+  readers - openaraw 0.1.7, opensxraw 0.2.5, openszraw 0.1.4, opentfraw
+  1.4.0, opentimstdf 1.3.3, openwraw 1.2.9 (crates.io + PyPI) - and the
+  umbrella openmassspec-io / openmassspec 1.5.4, re-pinned to the new core
+  + readers. Also merged the six `chore/decoded-unused-fields` reader PRs
+  and closed the five fully-resolved issues (SZRaw#26, TimsTDF#27,
+  TFRaw#41/#42/#43) beforehand.
+  - **Gotcha worth remembering:** core adds record fields as a *minor*
+    bump, but the fields are required (no `Default`), so it is
+    source-breaking to any reader that constructs `SpectrumRecord`/
+    `RunMetadata`. Readers pin core with a caret (`"1.4.0"` = `^1.4`), so
+    the moment core 1.5.0 hit crates.io their CI went red (missing-field
+    E0063) even though only a version string had changed. The fix is the
+    standard adaptation - bump the reader's core pin to the new version and
+    default the new fields at every construction site - and it must land
+    before the readers can build/release. `openmassspec-io` and
+    `-io-cli` construct the core records too, so they need the same
+    treatment. Watch for the local-vs-core name collision (`mzml::SpectrumRecord`
+    vs `msc::SpectrumRecord`) and field shorthand (`index,`) when editing.
 - **Core-1.4.0 adaptation wave (closed 2026-07-29).** Same shape as the
   1.3.0 wave below: OpenMassSpecCore#16 cut the 1.4.0 release (acquisition-
   software provenance, SHA-1 test coverage, zlib compression default,
