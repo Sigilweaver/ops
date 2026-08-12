@@ -286,15 +286,18 @@ SCIEX, Bruker, Shimadzu) cover roughly the top tier already.
 - **Chromatograms wired across all six vendors (section 8).** The last
   three - OpenSXRaw#21, OpenARaw#17 (both 2026-07-26), OpenTimsTDF#25
   (2026-07-28) - closed, joining OpenTFRaw/OpenWRaw/OpenSZRaw.
-- **In-flight: `chore/decoded-unused-fields` sweep.** Six open, green,
-  mergeable PRs (all self-authored) working the section-8 decoded-but-unused
-  fields: OpenARaw#29 (stride-284 base-peak intensity - code), OpenSZRaw#33
-  (QTOF cycle_index precursor linking, #26 - code), OpenTFRaw#50 (DIA/wideband
-  flags + label headings + audit_end, #41/#42/#43 - code), OpenTimsTDF#38
-  (Frames.Polarity ground truth, #27 - code), OpenSXRaw#37 (#23 collision-
-  energy/activation - documents why it can't be safely wired yet),
-  OpenWRaw#29 (#22/#23/#24 - documents blockers). Plus OpenTFRaw#51
-  (external, Nabejo - DIA isolation-window m/z regression test, #44).
+- **`chore/decoded-unused-fields` sweep - merged 2026-08-12.** Six
+  self-authored PRs landed to `main` (all UNRELEASED), working the section-8
+  decoded-but-unused fields: OpenARaw#29 (stride-284 base-peak intensity -
+  code), OpenSZRaw#33 (QTOF cycle_index precursor linking, resolves #26 -
+  code), OpenTFRaw#50 (DIA/wideband flags + label headings + audit_end,
+  resolves #41/#42/#43 - code), OpenTimsTDF#38 (Frames.Polarity ground
+  truth, resolves #27 - code), OpenSXRaw#37 (#23 collision-energy/activation
+  - documents why it can't be safely wired yet, issue stays open),
+  OpenWRaw#29 (#22/#23/#24 - documents blockers, issues stay open). The
+  four resolved-by-code issues (#26/#27/#41/#42/#43, plus OpenARaw#19) are
+  left open for you to close. Still open: OpenTFRaw#51 (external, Nabejo -
+  DIA isolation-window m/z regression test, #44).
 - **Core-1.3.0 adaptation wave + parity.md correction (2026-07-25).**
   Cross-repo integration audit (treating the suite as one product, not
   N independent repos) found three findings: (1) `openmassspec-core`
