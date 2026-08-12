@@ -11,25 +11,21 @@ issue are tracked directly in this file until they do.
 
 ---
 
-## 1. Security / robustness hardening (highest)
+## 1. Security / robustness hardening
 
 The readers all parse untrusted binary input with hand-rolled bounds
-checks; harden them as a family, not one at a time.
+checks; they were hardened as a family, not one at a time. This program is
+now **complete** - the only open item is one upstream-blocked audit
+advisory (SigilYX#26 below).
 
-- **Fuzzing + allocation caps across the reader family.** Allocations sized
-  from file-controlled `u32`s (memory-DoS) and no fuzz harnesses over the
-  decode paths.
-  - [OpenARaw#1](https://github.com/Sigilweaver/OpenARaw/issues/1) - cap untrusted allocations
-  - [OpenSXRaw#1](https://github.com/Sigilweaver/OpenSXRaw/issues/1) - bound read_scan_block + fix no-op cap
-  - [SigilYX#24](https://github.com/Sigilweaver/SigilYX/issues/24) - fuzz harness over the YXDB parse path
-  - [OpenWRaw#3](https://github.com/Sigilweaver/OpenWRaw/issues/3) - cap untrusted allocations + fuzz harness (~71 unwraps, 16 unbounded allocs)
-  - [OpenKSpace#1](https://github.com/Sigilweaver/OpenKSpace/issues/1) - cap ISMRMRD header-sized allocations (`ns * nc`)
-  - [OpenQVD#1](https://github.com/Sigilweaver/OpenQVD/issues/1) - cap QVD length-field allocations (`no_of_symbols`, `n_rows`)
-  - OpenTFRaw and OpenTimsTDF now covered too: OpenTFRaw#23 (closed
-    2026-07-19, `crates/opentfraw/fuzz`) and OpenTimsTDF#7 (closed
-    2026-07-14, extended the pre-existing `decode_codec2` harness to the
-    raw block-length read path). Fuzz treatment is now rolled out across
-    the whole reader family.
+- **Fuzzing + allocation caps across the reader family - DONE.** Every
+  reader now has both allocation caps on file-controlled length fields
+  (memory-DoS) and a fuzz harness over its decode path. All closed:
+  ~~OpenARaw#1~~, ~~OpenSXRaw#1~~ (`read_scan_block`), ~~SigilYX#24~~
+  (YXDB parse path), ~~OpenWRaw#3~~, ~~OpenKSpace#1~~ (ISMRMRD `ns * nc`),
+  ~~OpenQVD#1~~ (`no_of_symbols`, `n_rows`), plus OpenTFRaw#23 (2026-07-19,
+  `crates/opentfraw/fuzz`) and OpenTimsTDF#7 (2026-07-14, extended the
+  `decode_codec2` harness to the raw block-length read path).
 - **`cargo audit` CI job standardized across every Rust repo (done 2026-07-11).**
   The rollout surfaced a real suite-wide vuln surface. Cleared by lockfile
   bump: genolance, openkspace (crossbeam-epoch/quinn-proto/rustls-webpki).
@@ -53,59 +49,42 @@ checks; harden them as a family, not one at a time.
       `polars-io`'s optional (and inactive) `cloud` feature, which caps
       `object_store` below the version that would clear it. Blocked on
       polars-io bumping its `object_store` constraint.
-  - Loom is a separate Python dep gate, [Loom#2](https://github.com/Sigilweaver/Loom/issues/2).
+  - ~~Loom is a separate Python dep gate, [Loom#2](https://github.com/Sigilweaver/Loom/issues/2)~~ closed 2026-07-12 (dep-vuln gate + dependabot.yml + pre-release banner landed).
 
-## 2. Core 1.4.0 adaptation wave (in progress)
+## 2. Vendor-extras adaptation wave (next)
 
-Four PRs from the contractor merged 2026-07-28 into `openmassspec-core`
-(#12-15: acquisition-software provenance, SHA-1 test coverage, zlib
-compression default, peak-picking processing step), two of them
-source-breaking. Same pattern as the 2026-07-25 core-1.3.0 wave (section
-7 below) - release the core bump, then every downstream repo needs a
-small `RunMetadata` construction-site fix before it can pick it up.
+The core-1.4.0 adaptation wave is **done** - all seven downstream
+`RunMetadata` fixes and both MSRV-gap issues closed, 1.4.0 released, six
+vendor readers re-bumped (see "Done recently"). The next core change is
+already staged on `main`:
 
-- [OpenMassSpecCore#16](https://github.com/Sigilweaver/OpenMassSpecCore/issues/16) -
-  cut the 1.4.0 release itself (still sitting `Unreleased` in CHANGELOG.md)
-- Downstream `RunMetadata` fixes, blocked on the above:
-  [OpenARaw#26](https://github.com/Sigilweaver/OpenARaw/issues/26),
-  [OpenSXRaw#31](https://github.com/Sigilweaver/OpenSXRaw/issues/31),
-  [OpenSZRaw#30](https://github.com/Sigilweaver/OpenSZRaw/issues/30)
-  (four construction sites, one per instrument variant),
-  [OpenTFRaw#47](https://github.com/Sigilweaver/OpenTFRaw/issues/47),
-  [OpenTimsTDF#31](https://github.com/Sigilweaver/OpenTimsTDF/issues/31),
-  [OpenWRaw#25](https://github.com/Sigilweaver/OpenWRaw/issues/25),
-  [OpenMassSpec#22](https://github.com/Sigilweaver/OpenMassSpec/issues/22)
-  (test fixture only, no production code affected)
-- Also fixed in the same pass: OpenMassSpec's MSRV CI job was red
-  (pre-existing, unrelated to the above) - `libsqlite3-sys 0.38.x`
-  (pulled in transitively via `opentimstdf`'s `rusqlite ^0.40`, reachable
-  only through the optional `bruker`/`all` feature) uses the `cfg_select!`
-  macro stabilized in Rust 1.95. Bumped `rust-version`/the MSRV job from
-  1.88 to 1.95 ([691a6ca](https://github.com/Sigilweaver/OpenMassSpec/commit/691a6ca));
-  verified clean against the real 1.95 toolchain. Not raised as an
-  org-wide `policy.msrv` change (`versions.toml`) since no other repo is
-  actually forced off 1.88 yet - see the two gap issues below.
-  [OpenTimsTDF#32](https://github.com/Sigilweaver/OpenTimsTDF/issues/32)
-  and [OpenQBW#12](https://github.com/Sigilweaver/OpenQBW/issues/12) both
-  have the same mandatory (non-optional) `rusqlite`-bundled dependency
-  and no MSRV CI job at all yet to catch it - filed so whoever adds one
-  pins 1.95 from the start instead of landing red on day one.
+- [OpenMassSpecCore#18](https://github.com/Sigilweaver/OpenMassSpecCore/pull/18)
+  merged 2026-08-11 (the "Option C" decision from
+  [#17](https://github.com/Sigilweaver/OpenMassSpecCore/issues/17)): added
+  `SpectrumRecord::extra` / `RunMetadata::extra` (namespaced
+  reader-specific string metadata) and `SpectrumRecord::acquisition_event_id`
+  (typed numeric grouping id); the mzML writer projects both as
+  `userParam`s. Sits in core's `[Unreleased]` CHANGELOG - **not yet cut as
+  a release**. Acquisition *mode* is explicitly deferred (still tracked by
+  the open umbrella proposal #17).
+- Next step, same shape as every prior wave: cut the core release carrying
+  #18, then a downstream pass where each vendor reader can populate
+  `extra`/`acquisition_event_id` from fields it already decodes - this is
+  where several of the section-8 decoded-but-unused fields finally get a
+  home. No downstream issues filed yet; file them when the release is cut.
 
-## 3. Real CI coverage (cross-cutting)
+## 3. Real CI coverage (cross-cutting) - DONE
 
-Every reader's conformance tests currently *skip* on CI because the corpus
-is out of tree, so decode paths aren't exercised anywhere automated. This
-is the biggest confidence gap in the suite.
+The corpus-skip gap - previously the biggest confidence gap in the suite -
+is closed. Conformance tests now run for real in CI instead of skipping,
+and the corpus-free decoder unit tests landed alongside.
 
-- [OpenMassSpec#5](https://github.com/Sigilweaver/OpenMassSpec/issues/5) -
-  wire `fetch_corpus.py` into CI (or check in a small curated fixture
-  corpus) so conformance tests run for real instead of skipping. Affects
-  all readers: OpenTFRaw, OpenTimsTDF, OpenARaw, OpenSXRaw, OpenSZRaw,
-  OpenWRaw, and OpenMassSpec itself all currently skip silently on a
-  plain checkout (issue body updated 2026-07-25 - OpenSZRaw was missing).
-  Proposed as suite-wide with OpenTFRaw as the first per-repo target.
-- [OpenARaw#2](https://github.com/Sigilweaver/OpenARaw/issues/2) / [OpenSXRaw#2](https://github.com/Sigilweaver/OpenSXRaw/issues/2) - byte-slice decoder unit tests (corpus-free coverage)
-- [GenoLance#1](https://github.com/Sigilweaver/GenoLance/issues/1) - **no unit tests at all**; CI runs `cargo test` over an empty set
+- ~~[OpenMassSpec#5](https://github.com/Sigilweaver/OpenMassSpec/issues/5)~~
+  closed - `fetch_corpus.py` wired into CI so conformance tests run for
+  real across all readers, rather than skipping silently on a plain
+  checkout.
+- ~~[OpenARaw#2](https://github.com/Sigilweaver/OpenARaw/issues/2) / [OpenSXRaw#2](https://github.com/Sigilweaver/OpenSXRaw/issues/2)~~ closed - byte-slice decoder unit tests (corpus-free coverage).
+- ~~[GenoLance#1](https://github.com/Sigilweaver/GenoLance/issues/1)~~ closed - unit tests added; CI no longer runs `cargo test` over an empty set.
 - **Test-matrix-mirrors-what-you-ship gap**, now documented as the org
   standard in [`CI_STANDARDS.md`](CI_STANDARDS.md) (test every OS you
   ship a wheel/binary for; lint once on Linux). Closed 2026-07-19:
@@ -167,23 +146,23 @@ single-vendor. See [OpenMassSpec#6](https://github.com/Sigilweaver/OpenMassSpec/
 for the proposed parity-matrix doc that should track this table going
 forward instead of this section once it exists.
 
-- **Chromatograms are unwired end-to-end.** `ChromatogramRecord`/
-  `iter_chromatograms` exist in the shared schema, and the mzML writer now
-  emits `<chromatogramList>` when a source yields anything (closed
+- **Chromatograms are now wired across all six vendors.** `ChromatogramRecord`/
+  `iter_chromatograms` exist in the shared schema, the mzML writer emits
+  `<chromatogramList>` when a source yields anything (closed
   [OpenMassSpecCore#1](https://github.com/Sigilweaver/OpenMassSpecCore/issues/1),
-  2026-07-15). As of the 2026-07-24 sweep, OpenTFRaw, OpenWRaw, and
-  OpenSZRaw all implement `iter_chromatograms`; OpenSXRaw and OpenTimsTDF
-  still decode TIC-shaped data (`IdxRecord.tic`, `Frame.summed_intensities`)
-  without surfacing it as a chromatogram; OpenARaw parses no
-  chromatogram-shaped data at all yet - a real format-support gap, not an
-  oversight. Per-vendor gap issues filed 2026-07-19, each investigated for
-  whether the data is already decoded-but-unused (small wire-up) or needs
-  net-new decode/aggregation work (larger):
+  2026-07-15), and every vendor reader now implements `iter_chromatograms`:
+  OpenTFRaw, OpenWRaw, OpenSZRaw (as of the 2026-07-24 sweep), plus
+  OpenSXRaw ([#21](https://github.com/Sigilweaver/OpenSXRaw/issues/21),
+  closed 2026-07-26), OpenARaw ([#17](https://github.com/Sigilweaver/OpenARaw/issues/17),
+  closed 2026-07-26), and OpenTimsTDF ([#25](https://github.com/Sigilweaver/OpenTimsTDF/issues/25),
+  closed 2026-07-28). What remains is per-vendor depth (BPC/SRM/PRM
+  refinements) tracked in the follow-up bullets below, not the basic
+  end-to-end wiring, which is done:
   - ~~[OpenWRaw#9](https://github.com/Sigilweaver/OpenWRaw/issues/9) - wire the existing (already-decoded, unused) `chroms.rs` into the trait~~ closed 2026-07-15 (574fe09); pressure/flow-rate/temperature channels only (units with no matching PSI-MS term are skipped). On main, UNRELEASED.
   - ~~[OpenTFRaw#39](https://github.com/Sigilweaver/OpenTFRaw/issues/39) - TIC/BPC/SRM all already fully decoded (`ScanIndexEntry`, unused `tic_chromatogram()`/`bpc_chromatogram()` helpers, SRM transition grouping) - pure wire-up, smallest of the five~~ closed; confirmed wired (`build_chromatograms`, `crates/opentfraw/src/mzml.rs:709`) during the 2026-07-24 sweep.
-  - [OpenTimsTDF#25](https://github.com/Sigilweaver/OpenTimsTDF/issues/25) - TIC decoded-but-unused (small wire-up, `Frame.summed_intensities` per the 2026-07-24 sweep); BPC needs one new field selected from the `Frames` table (small addition); SRM/PRM needs new aggregation across frames per target (larger).
-  - [OpenSXRaw#21](https://github.com/Sigilweaver/OpenSXRaw/issues/21) - TIC decoded-but-discarded in `reader.rs` (small wire-up, `IdxRecord.tic`); BPC and SRM need new decode/aggregation work, scoped as follow-ups. 2026-07-24 sweep found BPC is actually a small wire-up too - `OpenMassSpecCore::SpectrumRecord::effective_base_peak()` already does the aggregation, same tier as TIC (see issue comment).
-  - [OpenARaw#17](https://github.com/Sigilweaver/OpenARaw/issues/17) - no chromatogram data decoded yet; needs new aggregation code reusing already-parsed scan fields (no new binary-format RE, but real new code).
+  - ~~[OpenTimsTDF#25](https://github.com/Sigilweaver/OpenTimsTDF/issues/25)~~ closed 2026-07-28 - TIC/BPC wired via #26, SRM/PRM traces implemented for mzML export.
+  - ~~[OpenSXRaw#21](https://github.com/Sigilweaver/OpenSXRaw/issues/21)~~ closed 2026-07-26 - existing Idx TIC data wired into `iter_chromatograms`; BPC/SRM new-decode work was spun out separately.
+  - ~~[OpenARaw#17](https://github.com/Sigilweaver/OpenARaw/issues/17)~~ closed 2026-07-26 - `iter_chromatograms` implemented so TIC/BPC/SRM reach mzML output.
   - OpenSZRaw - no new issue; already-open [OpenSZRaw#2](https://github.com/Sigilweaver/OpenSZRaw/issues/2) (PDA/LSS chromatogram payload decode) already scopes the `iter_chromatograms` wiring as part of its done-criteria. `PDA 3D Raw Data`'s per-value payload grammar is still unsolved after 14+ combined investigation sessions (2026-07-19/20, two contributors) - see `docs/format/04-lcd-chromatogram-pda.md`'s factsheet for the full ruled-out list. Both follow-ups spun out 2026-07-20 are now resolved: [OpenSZRaw#21](https://github.com/Sigilweaver/OpenSZRaw/issues/21) closed - `LC Raw Data/Chromatogram Ch6` decoded (page framing + literal/wide-token tokenization, PR #22, external contributor); `Ch5` left unemitted (single repeated value in every available file, numeric grammar untestable from the corpus). [OpenSZRaw#20](https://github.com/Sigilweaver/OpenSZRaw/issues/20) closed 2026-07-21 - corpus widened 151->2976 files/9->16 accessions and found a genuinely non-empty `LSS Raw Data/Chromatogram Ch1` (MTBLS7425, 16S/23S rRNA study), the first real sample of the literally-named stream; not decoded yet. 2026-07-24 sweep re-ran Ch6's decode against Ch1: the outer page framing generalizes byte-exactly (zero leftover across all 7 MTBLS7425 files), but Ch6's tokenization threshold does not - an exhaustive parameter sweep found no matching threshold/wide_width combination, a genuine negative result (see issue comment for leads). A new anomaly spun out from that pass: [OpenSZRaw#23](https://github.com/Sigilweaver/OpenSZRaw/issues/23) (2149 `MTBLS688` files lack the `LSS Raw Data` storage entirely, unlike every other IT-TOF file, cause not investigated).
 - ~~[OpenMassSpecCore#2](https://github.com/Sigilweaver/OpenMassSpecCore/issues/2) - `RunMetadata.start_timestamp` decoded by all five vendors, never written by the shared mzML writer~~ closed 2026-07-15; reaches output automatically once vendors bump to the next core release (no vendor code changes needed).
 - ~~[OpenMassSpecCore#3](https://github.com/Sigilweaver/OpenMassSpecCore/issues/3) - no schema field for FAIMS compensation voltage~~ schema half closed 2026-07-15 (`SpectrumRecord.faims_cv` + writer support added). Vendor half done: [OpenTFRaw#27](https://github.com/Sigilweaver/OpenTFRaw/issues/27) closed 2026-07-15 (32d1d0a, released in OpenTFRaw 1.3.4).
@@ -288,6 +267,34 @@ SCIEX, Bruker, Shimadzu) cover roughly the top tier already.
 
 ## Done recently (for context)
 
+- **Core-1.4.0 adaptation wave (closed 2026-07-29).** Same shape as the
+  1.3.0 wave below: OpenMassSpecCore#16 cut the 1.4.0 release (acquisition-
+  software provenance, SHA-1 test coverage, zlib compression default,
+  peak-picking processing step - two source-breaking), then all seven
+  downstream `acquisition_software_name/version` construction-site fixes
+  landed and closed (OpenARaw#26, OpenSXRaw#31, OpenSZRaw#30, OpenTFRaw#47,
+  OpenTimsTDF#31, OpenWRaw#25, and OpenMassSpec#22 test-fixture-only), six
+  vendor readers re-bumped. The two MSRV-gap issues filed in the same pass
+  (OpenTimsTDF#32, OpenQBW#12 - `rusqlite`/`libsqlite3-sys` needs Rust 1.95
+  via the `cfg_select!` macro) are both closed too; OpenMassSpec's own MSRV
+  job was moved 1.88 -> 1.95 (691a6ca), not raised to an org-wide
+  `policy.msrv` change since no other repo is forced off 1.88 yet.
+- **CI corpus-skip gap closed (section 3).** OpenMassSpec#5 wired
+  `fetch_corpus.py` into CI so conformance tests run for real; the
+  corpus-free decoder unit tests (OpenARaw#2, OpenSXRaw#2) and GenoLance#1
+  (empty test set) all closed alongside.
+- **Chromatograms wired across all six vendors (section 8).** The last
+  three - OpenSXRaw#21, OpenARaw#17 (both 2026-07-26), OpenTimsTDF#25
+  (2026-07-28) - closed, joining OpenTFRaw/OpenWRaw/OpenSZRaw.
+- **In-flight: `chore/decoded-unused-fields` sweep.** Six open, green,
+  mergeable PRs (all self-authored) working the section-8 decoded-but-unused
+  fields: OpenARaw#29 (stride-284 base-peak intensity - code), OpenSZRaw#33
+  (QTOF cycle_index precursor linking, #26 - code), OpenTFRaw#50 (DIA/wideband
+  flags + label headings + audit_end, #41/#42/#43 - code), OpenTimsTDF#38
+  (Frames.Polarity ground truth, #27 - code), OpenSXRaw#37 (#23 collision-
+  energy/activation - documents why it can't be safely wired yet),
+  OpenWRaw#29 (#22/#23/#24 - documents blockers). Plus OpenTFRaw#51
+  (external, Nabejo - DIA isolation-window m/z regression test, #44).
 - **Core-1.3.0 adaptation wave + parity.md correction (2026-07-25).**
   Cross-repo integration audit (treating the suite as one product, not
   N independent repos) found three findings: (1) `openmassspec-core`
