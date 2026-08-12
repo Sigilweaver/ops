@@ -295,9 +295,13 @@ SCIEX, Bruker, Shimadzu) cover roughly the top tier already.
   truth, resolves #27 - code), OpenSXRaw#37 (#23 collision-energy/activation
   - documents why it can't be safely wired yet, issue stays open),
   OpenWRaw#29 (#22/#23/#24 - documents blockers, issues stay open). The
-  four resolved-by-code issues (#26/#27/#41/#42/#43, plus OpenARaw#19) are
-  left open for you to close. Still open: OpenTFRaw#51 (external, Nabejo -
-  DIA isolation-window m/z regression test, #44).
+  fully resolved-by-code issues were closed 2026-08-12: OpenSZRaw#26,
+  OpenTimsTDF#27, OpenTFRaw#41/#42/#43. Left open on purpose: OpenARaw#19
+  (only offset 44/base-peak intensity wired; offset 36/TIC couldn't be
+  safely assigned and stays unresolved), OpenTimsTDF#28 (documented-for-
+  decision, not wired), OpenSXRaw#23 and OpenWRaw#22/#23/#24 (documented
+  blockers). Still open: OpenTFRaw#51 (external, Nabejo - DIA
+  isolation-window m/z regression test, #44).
 - **Core-1.3.0 adaptation wave + parity.md correction (2026-07-25).**
   Cross-repo integration audit (treating the suite as one product, not
   N independent repos) found three findings: (1) `openmassspec-core`
