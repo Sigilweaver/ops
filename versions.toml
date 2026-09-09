@@ -100,11 +100,11 @@ pypi_version = "1.4.3"
 [formats.openqbw]
 repo = "Sigilweaver/OpenQBW"
 crate = "openqbw"
-crates_version = "0.1.4"
+crates_version = "0.1.5"
 cli_crate = "openqbw-cli"
-cli_version = "0.1.4"
+cli_version = "0.1.5"
 pypi = "openqbw"
-pypi_version = "0.1.4"
+pypi_version = "0.1.5"
 
 [formats.opensqlanywhere]
 repo = "Sigilweaver/OpenSQLAnywhere"
