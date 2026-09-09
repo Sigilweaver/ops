@@ -109,9 +109,9 @@ pypi_version = "0.1.4"
 [formats.opensqlanywhere]
 repo = "Sigilweaver/OpenSQLAnywhere"
 crate = "opensqlany"
-crates_version = "0.1.1"
+crates_version = "0.2.0"
 cli_crate = "opensqlany-cli"
-cli_version = "0.1.1"
+cli_version = "0.2.0"
 
 [formats.sigilyx]
 repo = "Sigilweaver/SigilYX"
