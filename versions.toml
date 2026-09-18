@@ -18,11 +18,11 @@
 [mass_spectrometry.openmassspec]
 repo = "Sigilweaver/OpenMassSpec"
 crate = "openmassspec-io"
-crates_version = "1.5.4"
+crates_version = "1.5.5"
 cli_crate = "openmassspec-io-cli"
-cli_version = "1.5.4"
+cli_version = "1.5.5"
 pypi = "openmassspec"
-pypi_version = "1.5.4"
+pypi_version = "1.5.5"
 
 [mass_spectrometry.openmassspec-core]
 repo = "Sigilweaver/OpenMassSpecCore"
@@ -46,9 +46,9 @@ pypi_version = "0.2.5"
 [mass_spectrometry.opentfraw]
 repo = "Sigilweaver/OpenTFRaw"
 crate = "opentfraw"
-crates_version = "1.4.0"
+crates_version = "1.4.1"
 pypi = "opentfraw"
-pypi_version = "1.4.0"
+pypi_version = "1.4.1"
 
 [mass_spectrometry.OpenTimsTDF]
 repo = "Sigilweaver/OpenTimsTDF"
