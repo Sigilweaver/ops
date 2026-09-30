@@ -9,3 +9,6 @@
 !/scripts/
 !/versions.toml
 !/release.toml.template
+
+# Local org snapshots can include private repositories and discussions.
+/scripts/__pycache__/
