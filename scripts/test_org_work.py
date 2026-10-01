@@ -317,6 +317,67 @@ class OrgWorkTests(unittest.TestCase):
             self.assertEqual(state["head_oid"], "current-head")
             self.assertTrue((root / "queue.html").exists())
 
+    def test_track_completed_work_without_restoring_it_to_inventory(self):
+        for key, head in (("Sigilweaver/Test#1", None),
+                          ("Sigilweaver/Test#2", "reviewed-head"),
+                          ("Sigilweaver/Test@cloud/work", "reviewed-branch-head")):
+            with self.subTest(key=key), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                current = snapshot()
+                current["repositories"][0].update(issues=[], pullRequests=[])
+                work.write_json(root / "snapshot.json", current)
+                # Previous snapshots may already have aged out the work too.
+                work.write_json(root / "previous.json", current)
+                entry = {"status": "review", "owner": "reviewer", "priority": 1,
+                         "note": "Reviewed before closure"}
+                if head:
+                    entry["head_oid"] = head
+                work.write_json(root / "state.json", {"items": {key: entry}})
+                with patch.object(work, "gh_json", side_effect=AssertionError("network called")):
+                    self.assertEqual(work.main([
+                        "--data-dir", directory, "track", key,
+                        "--status", "done", "--note", "Verified completed",
+                    ]), 0)
+                saved = work.read_json(root / "state.json")
+                recorded = saved["items"][key]
+                self.assertEqual(recorded["status"], "done")
+                self.assertEqual(recorded["note"], "Verified completed")
+                self.assertEqual(recorded["owner"], "reviewer")
+                self.assertEqual(recorded["priority"], 1)
+                self.assertEqual(recorded.get("head_oid"), head)
+                self.assertEqual(recorded["updated_at"], NOW)
+                self.assertEqual(work.inventory_items(current, saved), [])
+                self.assertNotIn(key, (root / "queue.html").read_text())
+                self.assertNotIn(key, (root / "queue.md").read_text())
+                self.assertEqual(work.read_json(root / "snapshot.json"), current)
+
+    def test_track_rejects_untracked_work_found_only_in_previous_snapshot(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            current = snapshot()
+            current["repositories"][0]["pullRequests"] = []
+            work.write_json(root / "snapshot.json", current)
+            work.write_json(root / "previous.json", snapshot())
+            with patch.object(work, "gh_json", side_effect=AssertionError("network called")):
+                with self.assertRaisesRegex(RuntimeError, "Unknown work key"):
+                    work.main(["--data-dir", directory, "track", "Sigilweaver/Test#2",
+                               "--status", "done"])
+            self.assertFalse((root / "state.json").exists())
+
+    def test_track_absent_work_requires_an_update(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            current = snapshot()
+            current["repositories"][0]["pullRequests"] = []
+            state = {"items": {"Sigilweaver/Test#2": {
+                "status": "review", "head_oid": "reviewed-head",
+            }}}
+            work.write_json(root / "snapshot.json", current)
+            work.write_json(root / "state.json", state)
+            with self.assertRaisesRegex(RuntimeError, "Provide a status"):
+                work.main(["--data-dir", directory, "track", "Sigilweaver/Test#2"])
+            self.assertEqual(work.read_json(root / "state.json"), state)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -557,7 +557,7 @@ def main(argv=None) -> int:
     state = read_json(args.data_dir / "state.json", {"schema_version": SCHEMA_VERSION, "items": {}})
     if args.command == "track":
         items = {item["key"]: item for item in inventory_items(snapshot, state, args.stale_days)}
-        if args.key not in items:
+        if args.key not in items and args.key not in state["items"]:
             raise RuntimeError("Unknown work key: " + args.key)
         updates = {field: getattr(args, field) for field in ("status", "owner", "priority", "note") if getattr(args, field) is not None}
         if not updates:
@@ -565,8 +565,11 @@ def main(argv=None) -> int:
         entry = state["items"].setdefault(args.key, {})
         entry.update(updates)
         entry["updated_at"] = utc_now()
-        if items[args.key].get("head_oid") and (not entry.get("head_oid") or args.status is not None):
-            entry["head_oid"] = items[args.key]["head_oid"]
+        # Completed work can leave the live inventory. Keep its local history
+        # editable without inferring a new review head from old snapshots.
+        head_oid = items.get(args.key, {}).get("head_oid")
+        if head_oid and (not entry.get("head_oid") or args.status is not None):
+            entry["head_oid"] = head_oid
         write_json(args.data_dir / "state.json", state)
     render_reports(args.data_dir, snapshot, state, args.stale_days)
     print(args.data_dir / "queue.html")

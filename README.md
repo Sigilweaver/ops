@@ -63,6 +63,11 @@ Previously seen repositories that disappear from the org listing retain their
 cached work with a visible warning. Reports distinguish known repositories from
 the current accessible listing, so losing access cannot silently hide work.
 
+After a tracked issue or PR closes, or a tracked branch leaves the inventory,
+you can still use `track` to mark it `--status done` or update its notes.
+Its recorded review head is preserved, and it stays out of the current work
+queue. This requires an existing entry in local state; unknown keys are rejected.
+
 `.work/` is ignored by Git, and generated files have owner-only permissions.
 It can contain private issue bodies and discussions. Keep it local. A
 separate `--data-dir` can be used for another org; pass global options
