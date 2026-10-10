@@ -104,7 +104,8 @@ When a project releases a new version:
    repo (one directory per repo); point it elsewhere with `--root DIR` or
    `SIGILWEAVER_ROOT=DIR`. Add `--remote` to also compare against the
    versions published on crates.io and PyPI. Exit status: 0 in sync,
-   1 drift, 2 missing repo or manifest.
+   1 drift, 2 something could not be checked (missing repo, unreadable
+   manifest, or no versions found).
 3. Commit and push.
 
 ## License

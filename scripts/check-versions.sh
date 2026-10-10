@@ -23,7 +23,8 @@
 #   --remote     Also compare versions.toml against the latest versions
 #                published on crates.io and PyPI (read-only HTTP GETs).
 #
-# Exit status: 0 all in sync, 1 drift found, 2 missing repo/manifest or
+# Exit status: 0 all in sync, 1 drift found, 2 anything left unchecked
+# (missing repo, unreadable manifest, nothing checked, unexpected error) or a
 # configuration error. Requires python3 >= 3.11 (tomllib); --remote needs curl.
 
 set -euo pipefail
@@ -57,8 +58,23 @@ fi
 ROOT="$(cd "$ROOT" && pwd)"
 
 exec python3 - "$ROOT" "$VERSIONS" "$REMOTE" <<'PYEOF'
-import json, os, re, subprocess, sys, tomllib
+import json, os, re, subprocess, sys
 from pathlib import Path
+
+try:
+    import tomllib
+except ModuleNotFoundError:
+    print("fatal: python3 >= 3.11 required (tomllib missing)", file=sys.stderr)
+    sys.exit(2)
+
+def _fatal_hook(exc_type, exc, tb):
+    # Any unexpected error means something went unchecked: never exit 0 or
+    # 1 (drift) for it.
+    sys.__excepthook__(exc_type, exc, tb)
+    print("fatal: check aborted by an unexpected error", file=sys.stderr)
+    sys.exit(2)
+
+sys.excepthook = _fatal_hook
 
 root = Path(sys.argv[1])
 versions_path = Path(sys.argv[2])
@@ -126,14 +142,17 @@ def cargo_package_version(cargo_path, repo_dir):
     return v
 
 def find_crate(repo_dir, crate):
+    """Return (manifest, version, unreadable manifests)."""
+    bad = []
     for m in manifests(repo_dir, "Cargo.toml"):
         try:
             pkg = load_toml(m).get("package", {})
-        except tomllib.TOMLDecodeError:
+        except (tomllib.TOMLDecodeError, OSError) as e:
+            bad.append(f"{rel(m)}: {e}")
             continue
         if pkg.get("name") == crate:
-            return m, cargo_package_version(m, repo_dir)
-    return None, None
+            return m, cargo_package_version(m, repo_dir), bad
+    return None, None, bad
 
 def norm_name(n):
     return re.sub(r"[-_.]+", "-", n).lower()
@@ -151,11 +170,13 @@ def pep440(v):
     tag = {"alpha": "a", "a": "a", "beta": "b", "b": "b", "rc": "rc"}[pre]
     return f"{base}{tag}{num or 0}"
 
-def find_pypi(repo_dir, name):
+def find_pypi(repo_dir, name, bad):
+    """Return (pyproject, version, error); unreadable files go to `bad`."""
     for m in manifests(repo_dir, "pyproject.toml"):
         try:
             data = load_toml(m)
-        except tomllib.TOMLDecodeError:
+        except (tomllib.TOMLDecodeError, OSError) as e:
+            bad.append(f"{rel(m)}: {e}")
             continue
         proj = data.get("project", {})
         if norm_name(proj.get("name", "")) != norm_name(name):
@@ -181,9 +202,10 @@ def check_crate(label, repo_dir, crate, want):
     if not crate:
         report("missing", label, "version recorded but no crate name")
         return
-    path, have = find_crate(repo_dir, crate)
+    path, have, bad = find_crate(repo_dir, crate)
     if path is None:
-        report("missing", label, f"crate {crate} not found in {rel(repo_dir)}")
+        extra = f"; unreadable: {', '.join(bad)}" if bad else ""
+        report("missing", label, f"crate {crate} not found in {rel(repo_dir)}{extra}")
     elif have is None:
         report("missing", label, f"no version in {rel(path)}")
     elif have == want:
@@ -195,9 +217,11 @@ def check_pypi(label, repo_dir, name, want):
     if not name:
         report("missing", label, "pypi_version recorded but no pypi name")
         return
-    path, have, err = find_pypi(repo_dir, name)
+    bad = []
+    path, have, err = find_pypi(repo_dir, name, bad)
     if path is None:
-        report("missing", label, f"no pyproject.toml with name {name} in {rel(repo_dir)}")
+        extra = f"; unreadable: {', '.join(bad)}" if bad else ""
+        report("missing", label, f"no pyproject.toml with name {name} in {rel(repo_dir)}{extra}")
     elif have is None:
         report("missing", label, f"{err} ({rel(path)})")
     elif pep440(have) == pep440(want):
@@ -257,23 +281,25 @@ def check_remote_pypi(label, name, want):
 
 def branch(repo_dir):
     try:
-        b = subprocess.run(["git", "-C", str(repo_dir), "branch", "--show-current"],
-                           capture_output=True, text=True).stdout.strip()
-        return b or "detached"
+        out = subprocess.run(["git", "-C", str(repo_dir), "branch", "--show-current"],
+                             capture_output=True, text=True)
+        if out.returncode != 0:
+            return "not a git checkout"
+        return out.stdout.strip() or "detached"
     except FileNotFoundError:
         return "?"
 
 print(f"root: {root}")
-for section in ("mass_spectrometry", "formats", "scientific"):
-    if section not in versions:
+for section, entries in versions.items():
+    if not isinstance(entries, dict):
+        continue
+    tracked = {n: i for n, i in entries.items()
+               if isinstance(i, dict) and any(k.endswith("_version") for k in i)}
+    if not tracked:
         continue
     print(f"\n== {section} ==")
-    for name, info in versions[section].items():
-        if not isinstance(info, dict):
-            continue
+    for name, info in tracked.items():
         fields = [k for k in info if k.endswith("_version")]
-        if not fields:
-            continue
         repo = info.get("repo")
         if not repo:
             report("missing", name, "no repo recorded")
@@ -284,6 +310,8 @@ for section in ("mass_spectrometry", "formats", "scientific"):
             continue
         print(f" {name} [{repo_dir.name} @ {branch(repo_dir)}]")
         unpublished = info.get("status") == "unpublished"
+        if remote and unpublished:
+            print(f"  -- {name}: status unpublished, registry check skipped")
         for key in fields:
             want = info[key]
             if key == "crates_version":
@@ -305,6 +333,9 @@ for section in ("mass_spectrometry", "formats", "scientific"):
 
 print()
 print(f"checked: {stats['checked']}, drift: {stats['drift']}, missing: {stats['missing']}")
+if stats["checked"] == 0:
+    print("fatal: no versions were checked", file=sys.stderr)
+    sys.exit(2)
 if stats["missing"]:
     sys.exit(2)
 sys.exit(1 if stats["drift"] else 0)
