@@ -13,6 +13,7 @@ repo, not the projects themselves.
 | [`BACKLOG.md`](BACKLOG.md) | Suite-level view of what's worth doing next across the projects, grouped by theme and linked to the per-repo GitHub issues. Start here to pick up work. |
 | [`CI_STANDARDS.md`](CI_STANDARDS.md) | What every repo's CI should look like (test-matrix-mirrors-what-you-ship, lint once on Linux) and the platform-specific gotchas to bake in proactively. Gap issues in individual repos link back here. |
 | [`PROVENANCE.md`](PROVENANCE.md) | Where the vendor-format readers may get format knowledge, what may be cross-checked against vendor software, and how sources are recorded. |
+| [`STABILITY.md`](STABILITY.md) | What counts as a breaking change for the mass-spec crates and Python packages, and the rules that keep breaking releases rare. |
 | [`release.toml.template`](release.toml.template) | `cargo-release` configuration template for Sigilweaver Rust workspaces. Copy to a repo root as `release.toml` to opt into coordinated release behavior. |
 | [`scripts/check-versions.sh`](scripts/check-versions.sh) | Verifies each per-project repo's `Cargo.toml` / `pyproject.toml` matches the value recorded in `versions.toml`. |
 | [`scripts/org_work.py`](scripts/org_work.py) | Pulls the whole org's issues, PRs, checks, reviews and recent branch work into a searchable local queue. Keeps ownership and next-action notes across refreshes. |
