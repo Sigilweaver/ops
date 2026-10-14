@@ -51,6 +51,9 @@ The job uses `.github/workflows/docs.yml`, with both its `uses` reference and
 Bun lockfile, runs the site's existing typecheck command, builds, verifies the
 generated tooling copy, checks the output, and uploads the build artifact.
 The default Bun version is 1.3.6; a caller can override it deliberately.
+The generated caller retains the existing `Docs (Docusaurus)` check name
+as a small result gate. It succeeds only when the shared validation job
+succeeds, preserving existing repository rules without weakening them.
 
 Updating the generator is a normal ops PR. Once its tests pass, run the sync
 script against each project with the new commit, validate each site's output,

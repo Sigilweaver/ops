@@ -103,6 +103,9 @@ class DocsSyncTests(unittest.TestCase):
             self.assertIn("# Keep the unrelated test job.", ci.read_text())
             self.assertIn("  test:\n    runs-on: ubuntu-latest", ci.read_text())
             self.assertIn("docs.yml@" + ref, ci.read_text())
+            self.assertEqual(ci.read_text().count("  docs-validation:"), 1)
+            self.assertIn("    name: Docs (Docusaurus)\n    needs: docs-validation", ci.read_text())
+            self.assertIn('test "$DOCS_RESULT" = success', ci.read_text())
             self.assertIn("title: 'Project'", (docs / "docusaurus.config.ts").read_text())
             self.assertNotIn("docusaurus-plugin-llms-txt", (docs / "package.json").read_text())
 

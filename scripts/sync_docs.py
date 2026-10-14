@@ -39,21 +39,31 @@ def sync(repo: Path, tooling_ref: str) -> None:
     (docs / "scripts").mkdir(exist_ok=True)
     shutil.copyfile(Path(__file__).with_name("docs_output.py"), docs / "scripts/docs_output.py")
 
-    job = f"""  docs:
-    name: Docs (Docusaurus)
+    job = f"""  docs-validation:
+    name: Shared docs validation
     permissions:
       contents: read
     uses: Sigilweaver/ops/.github/workflows/docs.yml@{tooling_ref}
     with:
       tooling-ref: {tooling_ref}
+  docs:
+    name: Docs (Docusaurus)
+    needs: docs-validation
+    if: ${{{{ always() }}}}
+    runs-on: ubuntu-latest
+    env:
+      DOCS_RESULT: ${{{{ needs.docs-validation.result }}}}
+    steps:
+      - run: test "$DOCS_RESULT" = success
 """
     ci = repo / ".github/workflows/ci.yml"
     ci_source = ci.read_text(encoding="utf-8") if ci.exists() else ""
+    ci_source = re.sub(r"^  docs-validation:\n.*?(?=^  [a-zA-Z0-9_-]+:\n|^  #|\Z)", "", ci_source, flags=re.MULTILINE | re.DOTALL)
     pattern = r"^  docs:\n.*?(?=^  [a-zA-Z0-9_-]+:\n|^  #|\Z)"
     match = re.search(pattern, ci_source, flags=re.MULTILINE | re.DOTALL)
     if match and "steps:" in match.group():
         # The existing standalone docs job has no consumers or deployment.
-        if re.search(r"needs:.*\bdocs\b|^\s+run:.*(?:wrangler|deploy)", match.group(), re.MULTILINE):
+        if "needs: docs-validation" not in match.group() and re.search(r"needs:.*\bdocs\b|^\s+run:.*(?:wrangler|deploy)", match.group(), re.MULTILINE):
             raise ValueError(f"Review the deployment docs job manually: {ci}")
         ci.write_text(ci_source[:match.start()] + job + ci_source[match.end():], encoding="utf-8")
     elif match and "Sigilweaver/ops/.github/workflows/docs.yml@" in match.group():
