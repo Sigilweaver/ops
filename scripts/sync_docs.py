@@ -24,6 +24,7 @@ def sync(repo: Path, tooling_ref: str) -> None:
     config = docs / "docusaurus.config.ts"
     source = config.read_text(encoding="utf-8")
     source = re.sub(r"^\s*plugins: \[['\"]docusaurus-plugin-llms-txt['\"]\],\n", "\n", source, flags=re.MULTILINE)
+    source = re.sub(r"^\s*['\"]docusaurus-plugin-llms-txt['\"],\n", "\n", source, flags=re.MULTILINE)
     if "docusaurus-plugin-llms-txt" in source:
         raise ValueError(f"Review the nonstandard plugin configuration manually: {config}")
     config.write_text(source, encoding="utf-8")
@@ -52,7 +53,7 @@ def sync(repo: Path, tooling_ref: str) -> None:
     match = re.search(pattern, ci_source, flags=re.MULTILINE | re.DOTALL)
     if match and "steps:" in match.group():
         # The existing standalone docs job has no consumers or deployment.
-        if re.search(r"needs:.*\bdocs\b|wrangler|deploy", match.group()):
+        if re.search(r"needs:.*\bdocs\b|^\s+run:.*(?:wrangler|deploy)", match.group(), re.MULTILINE):
             raise ValueError(f"Review the deployment docs job manually: {ci}")
         ci.write_text(ci_source[:match.start()] + job + ci_source[match.end():], encoding="utf-8")
     elif match and "Sigilweaver/ops/.github/workflows/docs.yml@" in match.group():
