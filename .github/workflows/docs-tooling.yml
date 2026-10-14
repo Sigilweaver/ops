@@ -1,0 +1,20 @@
+name: Docs tooling tests
+
+on:
+  push:
+    branches: [main]
+    paths: ["scripts/docs_output.py", "scripts/test_docs_output.py", "scripts/sync_docs.py", ".github/workflows/docs*.yml"]
+  pull_request:
+    paths: ["scripts/docs_output.py", "scripts/test_docs_output.py", "scripts/sync_docs.py", ".github/workflows/docs*.yml"]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - run: python3 -m unittest discover -s scripts -p test_docs_output.py -v

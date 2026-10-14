@@ -1,0 +1,61 @@
+name: Shared docs checks
+
+on:
+  workflow_call:
+    inputs:
+      tooling-ref:
+        description: Exact ops commit matching the pinned workflow reference
+        required: true
+        type: string
+      working-directory:
+        default: docs
+        type: string
+      build-command:
+        default: build:cloudflare
+        type: string
+      bun-version:
+        default: "1.3.6"
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  docs:
+    name: Docs output validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v7
+        with:
+          repository: Sigilweaver/ops
+          ref: ${{ inputs.tooling-ref }}
+          path: .docs-maintenance
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: ${{ inputs.bun-version }}
+      - name: Install locked dependencies
+        working-directory: ${{ inputs.working-directory }}
+        run: bun install --frozen-lockfile
+      - name: Typecheck
+        working-directory: ${{ inputs.working-directory }}
+        run: bun run typecheck
+      - name: Build
+        working-directory: ${{ inputs.working-directory }}
+        env:
+          DOCS_BUILD_COMMAND: ${{ inputs.build-command }}
+        run: bun run "$DOCS_BUILD_COMMAND"
+      - name: Generate index and validate rendered output
+        env:
+          DOCS_DIRECTORY: ${{ inputs.working-directory }}
+        run: |
+          cmp .docs-maintenance/scripts/docs_output.py "$DOCS_DIRECTORY/scripts/docs_output.py"
+          python3 .docs-maintenance/scripts/docs_output.py "$DOCS_DIRECTORY/build"
+      - uses: actions/upload-artifact@v7
+        with:
+          name: docs-build
+          path: ${{ inputs.working-directory }}/build
+          if-no-files-found: error
