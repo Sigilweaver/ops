@@ -32,7 +32,8 @@ def sync(repo: Path, tooling_ref: str) -> None:
         command = package["scripts"][name]
         if "scripts/docs_output.py" not in command:
             package["scripts"][name] = command + " && python3 scripts/docs_output.py build --write-index"
-    indent = 4 if re.search(r'^    "', text, re.MULTILINE) else 2
+    first_key = re.search(r'\{\s*\n( +)"', text)
+    indent = len(first_key.group(1)) if first_key else 2
     manifest.write_text(json.dumps(package, indent=indent) + "\n", encoding="utf-8")
     (docs / "scripts").mkdir(exist_ok=True)
     shutil.copyfile(Path(__file__).with_name("docs_output.py"), docs / "scripts/docs_output.py")
