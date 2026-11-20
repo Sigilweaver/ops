@@ -22,7 +22,7 @@ bytes or public sources, and each project should say plainly where a value came 
   basis for a value, and the layout must be explainable from public data.
   Vendor software is never a dependency and never runs in CI or tests.
 
-## What I decline, regardless of who did the work
+## What I decline
 
 - Anything that came from decompiling, disassembling, debugging or tracing
   vendor software or libraries. This includes watching it run through a
@@ -66,13 +66,3 @@ Each reader has to stay defensible for everyone who depends on it. I cannot
 verify or defend work derived from vendor code, so I do not take it,
 however good it is. Readers live in separate repositories, so a problem
 with one does not touch the others.
-
-## Reply text
-
-> Thank you for the work and for sharing it. I can't use this: it relies
-> on material the project's
-> [provenance policy](https://github.com/Sigilweaver/ops/blob/main/PROVENANCE.md)
-> declines, or on a source I can't confirm, so I'm closing it without using
-> any of it. If the underlying fact matters, I will re-derive it from public
-> files and credit those. A short method statement and the vendor-software
-> answer described on that page help on any future PR or issue.
