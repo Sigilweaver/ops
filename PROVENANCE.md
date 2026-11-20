@@ -1,53 +1,68 @@
 # Format provenance policy
 
-How Sigilweaver vendor-format readers (OpenTFRaw, OpenWRaw, OpenARaw,
-OpenTimsTDF, OpenSXRaw, OpenSZRaw) may learn and check what they decode.
-Adopted Oct 11, 2026. Each reader's CONTRIBUTING.md points here.
+This page covers every Sigilweaver project that reads a proprietary file
+format: the mass-spec readers (OpenTFRaw, OpenWRaw, OpenTimsTDF, OpenARaw,
+OpenSXRaw, OpenSZRaw), OpenSQLAnywhere, OpenQBW, OpenYXDB, and any reader
+added later. Each project's CONTRIBUTING.md points here.
 
-The goal is that every format layout in these readers can be explained
-from public bytes or public sources, and that the project says plainly
-where any value came from.
+Every format layout in these projects should be explainable from public
+bytes or public sources, and each project should say plainly where a value came from.
 
-## Never
+## What I accept
 
-- Vendor code of any kind in the repository or used as a reference:
-  SDK headers or sources, decompiled or disassembled binaries, proprietary
-  specifications, or confidential documentation.
-- Bypassing encryption, licence checks, or any other technical protection
-  to read data.
-- Format knowledge from anyone working from vendor-internal information.
-- Running vendor software in CI or tests, or adding a dependency that
-  reads the format through vendor libraries.
+- Public files and public documentation, including every file inside a
+  public bundle (PRIDE, MassIVE, MetaboLights and similar archives).
+- Byte-level analysis of files you own or that are public.
+- Other open-source readers, cited by name, version and license. I take
+  facts from them, not their code, unless the license allows it and the
+  copy is credited.
+- Comparison against output the vendor has already published.
+- A black-box comparison against vendor software you are licensed to run,
+  as a cross-check only. It can confirm a decoder. It is never the only
+  basis for a value, and the layout must be explainable from public data.
+  Vendor software is never a dependency and never runs in CI or tests.
 
-## Allowed with disclosure
+## What I decline
 
-- A contributor comparing values this project decodes against output from
-  vendor software they are licensed to run, as a cross-check.
+- Anything that came from decompiling, disassembling, debugging or tracing
+  vendor software or libraries. This includes watching it run through a
+  database engine, an ODBC driver or a hook.
+  Comparing the output it produces is a cross-check (see above);
+  observing its internals is declined.
+- Vendor source code, SDK headers, and leaked or confidential documents.
+- Anything that bypasses encryption, licence checks or other protection.
+- Knowledge from people working from vendor-internal information.
 
-Conditions:
+## What every PR or issue that adds format knowledge includes
 
-- The layout itself must be explainable from public data files. A
-  comparison may confirm a decoder; it may not be the only basis for one.
-- Say so in the pull request: which tool, which files, and what was
-  compared. Do not paste vendor-tool output into the repository.
-- If a value's only basis is a vendor comparison (for example a derived
-  quantity whose formula was matched to vendor output, not taken from a
-  public source), its documentation says so.
+1. A one or two line method statement: what you looked at and how you
+   reached the finding.
+2. Your answer to: "Was any vendor software, library or binary involved
+   beyond the program that created the file?" If yes, say what it was used
+   for.
 
-## Fine
+For a cross-check, also name the tool, the files and what was compared. Do
+not paste vendor-tool output into the repository.
 
-- Public data files (PRIDE, MassIVE, MetaboLights and similar archives),
-  including every file inside a public bundle.
-- Independent open-source readers and published papers, cited by name and
-  version.
-- Simple derived quantities and project naming conventions, documented as
-  such.
+## What happens to material I decline
+
+I close it with a link to this page and do not use it. If the underlying
+fact matters, I re-derive it from public files and cite those. I do not ask
+anyone to do anything on the decline list, and I do not ask for raw files:
+public data is used for reproductions.
 
 ## Records
 
-- Each reader's ATTRIBUTION.md lists its sources, and states when
-  contributors have cross-checked values against vendor software.
-- Code comments that cite a source name an exact public source this policy
-  allows. A claim with no such source is reworded or removed.
-- Git history and pull-request text are left as written. Corrections go in
-  new commits, ATTRIBUTION.md, or CHANGELOG.md.
+- Each project records its sources (in ATTRIBUTION.md where it has one) and
+  notes any value cross-checked against vendor software. If a value's only basis is such a
+  comparison, its documentation says so next to the value.
+- Code comments that cite a source name a public source this page accepts.
+  A claim with no such source is reworded or removed.
+- Corrections go in new commits, ATTRIBUTION.md or CHANGELOG.md.
+
+## Why
+
+Each reader has to stay defensible for everyone who depends on it. I cannot
+verify or defend work derived from vendor code, so I do not take it,
+however good it is. Readers live in separate repositories, so a problem
+with one does not touch the others.
