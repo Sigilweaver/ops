@@ -2,12 +2,11 @@
 
 This page covers every Sigilweaver project that reads a proprietary file
 format: the mass-spec readers (OpenTFRaw, OpenWRaw, OpenTimsTDF, OpenARaw,
-OpenSXRaw, OpenSZRaw), OpenSQLAnywhere, OpenQBW, OpenYXDB, OpenQVD, and any
-reader added later. Each project's CONTRIBUTING.md points here.
+OpenSXRaw, OpenSZRaw), OpenSQLAnywhere, OpenQBW, OpenYXDB, and any reader
+added later. Each project's CONTRIBUTING.md points here.
 
-I maintain these projects alone. Every format layout in them should be
-explainable from public bytes or public sources, and the project should say
-plainly where a value came from.
+Every format layout in these projects should be explainable from public
+bytes or public sources, and each project should say plainly where a value came from.
 
 ## What I accept
 
@@ -28,6 +27,8 @@ plainly where a value came from.
 - Anything that came from decompiling, disassembling, debugging or tracing
   vendor software or libraries. This includes watching it run through a
   database engine, an ODBC driver or a hook.
+  Comparing the output it produces is a cross-check (see above);
+  observing its internals is declined.
 - Vendor source code, SDK headers, and leaked or confidential documents.
 - Anything that bypasses encryption, licence checks or other protection.
 - Knowledge from people working from vendor-internal information.
@@ -52,8 +53,8 @@ public data is used for reproductions.
 
 ## Records
 
-- Each reader's ATTRIBUTION.md lists its sources and notes any value
-  cross-checked against vendor software. If a value's only basis is such a
+- Each project records its sources (in ATTRIBUTION.md where it has one) and
+  notes any value cross-checked against vendor software. If a value's only basis is such a
   comparison, its documentation says so next to the value.
 - Code comments that cite a source name a public source this page accepts.
   A claim with no such source is reworded or removed.
