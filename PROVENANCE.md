@@ -69,10 +69,10 @@ with one does not touch the others.
 
 ## Reply text
 
-> Thank you for the work and for sharing it. I can't merge this: it relies
-> on material I don't accept under the project's
-> [provenance policy](https://github.com/Sigilweaver/ops/blob/main/PROVENANCE.md),
-> and I can't verify where it came from, so I won't use it. If the fact
-> matters I will re-derive it from public files and credit those. A short
-> method statement and the vendor-software answer described on that page
-> help on any future PR or issue.
+> Thank you for the work and for sharing it. I can't use this: it relies
+> on material the project's
+> [provenance policy](https://github.com/Sigilweaver/ops/blob/main/PROVENANCE.md)
+> declines, or on a source I can't confirm, so I'm closing it without using
+> any of it. If the underlying fact matters, I will re-derive it from public
+> files and credit those. A short method statement and the vendor-software
+> answer described on that page help on any future PR or issue.
