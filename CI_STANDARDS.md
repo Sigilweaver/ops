@@ -18,7 +18,9 @@ first. If a release workflow builds `ubuntu-latest` + `macos-latest` +
 `windows-latest` wheels, the CI test matrix must run on all three, both
 for the Rust test suite and any Python-level (`pytest`/smoke-test)
 coverage - a real bug in this sweep was in a Python test script, not
-Rust.
+Rust. Architectures that are cross-built or built on a different image
+than they target (Linux aarch64, macOS Intel) are tested less; see
+[`SUPPORT.md`](SUPPORT.md).
 
 **Lint/fmt: once, on Linux, not per-OS.** `cargo fmt --check` and
 `cargo clippy` are OS-independent (barring rare `cfg(windows)`/

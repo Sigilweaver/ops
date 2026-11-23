@@ -17,8 +17,8 @@ oldest and the newest supported version on Linux, and the newest on macOS and Wi
 bindings ship one abi3 wheel per platform, built for the oldest supported version.
 
 **Rust.** Each crate declares `rust-version` in `Cargo.toml` and CI checks it with a build on that exact toolchain. The
-declared version is what the dependencies need, and I never pick a release less than six months old. CI otherwise
-runs on current stable. Older toolchains are not supported.
+declared version is what the dependencies need, and I avoid requiring a release less than six months old. CI
+otherwise runs on current stable. Older toolchains are not supported.
 
 **Node.** Node is a build tool here (documentation sites and Loom Studio), not something users run. I support the
 Node LTS lines that are Active or in Maintenance. On Nov 20 2026 that is 22, 24 and 26. `engines` in each
@@ -40,15 +40,15 @@ previous image for that one job and remove the pin when the image catches up.
 - I review floors twice a year, in October (after the new Python release and Node LTS) and April.
 - A Python floor moves when the version has been end of life for six months. A Rust floor moves when a dependency or
   a language feature needs it. A Node floor moves when the version leaves Maintenance.
-- A raise ships in the next minor release of the project, never in a patch release, and is the first item in the
-  CHANGELOG under "Changed". Rust floors also change the README badge.
-- Older releases keep working on older toolchains: pip and cargo select the last release that supports the
-  interpreter or compiler you have. I do not backport fixes to those releases except for security issues I judge
-  serious.
-- Where a project's stability policy says a floor raise needs a major release, that policy wins.
+- A Python floor raise ships in a minor release of the project, never in a patch release, and is the first item in
+  the CHANGELOG under "Changed". A Rust floor raise is listed in the CHANGELOG and changes the README badge.
+- Older releases stay available for older toolchains: pip selects the last release that supports your interpreter,
+  and cargo does the same when its MSRV-aware resolver is on. I do not backport fixes to those releases except for
+  security issues I judge serious.
+- For the projects it covers, [STABILITY.md](STABILITY.md) says which kind of release a change needs.
 
 ## Where the numbers live
 
-The numbers are in `pyproject.toml`, `Cargo.toml`, `package.json` and the CI matrix, and nowhere else by hand. READMEs
-link to this page instead of repeating versions, apart from badges generated from the manifest. Where a project and
-this page disagree, the project is right.
+The numbers are in `pyproject.toml`, `Cargo.toml`, `package.json` and the CI matrix, and nowhere else by hand. The
+versions named on this page are a snapshot for the date given. READMEs link to this page instead of repeating
+versions, apart from badges generated from the manifest. Where a project and this page disagree, the project is right.
