@@ -18,11 +18,11 @@
 [mass_spectrometry.openmassspec]
 repo = "Sigilweaver/OpenMassSpec"
 crate = "openmassspec-io"
-crates_version = "2.0.0"
+crates_version = "2.1.0"
 cli_crate = "openmassspec-io-cli"
-cli_version = "2.0.0"
+cli_version = "2.1.0"
 pypi = "openmassspec"
-pypi_version = "2.0.0"
+pypi_version = "2.1.0"
 
 [mass_spectrometry.openmassspec-core]
 repo = "Sigilweaver/OpenMassSpecCore"
@@ -48,23 +48,23 @@ pypi_version = "0.4.0"
 [mass_spectrometry.opentfraw]
 repo = "Sigilweaver/OpenTFRaw"
 crate = "opentfraw"
-crates_version = "3.0.0"
+crates_version = "3.1.0"
 pypi = "opentfraw"
-pypi_version = "3.0.0"
+pypi_version = "3.1.0"
 
 [mass_spectrometry.OpenTimsTDF]
 repo = "Sigilweaver/OpenTimsTDF"
 crate = "opentimstdf"
-crates_version = "3.0.0"
+crates_version = "3.0.1"
 pypi = "opentimstdf"
-pypi_version = "3.0.0"
+pypi_version = "3.0.1"
 
 [mass_spectrometry.openwraw]
 repo = "Sigilweaver/OpenWRaw"
 crate = "openwraw"
-crates_version = "4.0.0"
+crates_version = "4.0.1"
 pypi = "openwraw"
-pypi_version = "4.0.0"
+pypi_version = "4.0.1"
 
 [mass_spectrometry.openszraw]
 repo = "Sigilweaver/OpenSZRaw"
@@ -90,37 +90,37 @@ pypi_version = "0.2.0a0"
 [formats.openqvd]
 repo = "Sigilweaver/OpenQVD"
 crate = "openqvd"
-crates_version = "1.2.0"
+crates_version = "2.0.0"
 pypi = "openqvd"
-pypi_version = "1.2.0"
+pypi_version = "2.0.0"
 
 [formats.openyxdb]
 repo = "Sigilweaver/OpenYXDB"
 pypi = "openyxdb"
-pypi_version = "1.4.3"
+pypi_version = "2.0.0"
 
 [formats.openqbw]
 repo = "Sigilweaver/OpenQBW"
 crate = "openqbw"
-crates_version = "0.1.5"
+crates_version = "0.2.0"
 cli_crate = "openqbw-cli"
-cli_version = "0.1.5"
+cli_version = "0.2.0"
 pypi = "openqbw"
-pypi_version = "0.1.5"
+pypi_version = "0.2.0"
 
 [formats.opensqlanywhere]
 repo = "Sigilweaver/OpenSQLAnywhere"
 crate = "opensqlany"
-crates_version = "0.2.0"
+crates_version = "0.3.0"
 cli_crate = "opensqlany-cli"
-cli_version = "0.2.0"
+cli_version = "0.3.0"
 
 [formats.sigilyx]
 repo = "Sigilweaver/SigilYX"
 crate = "sigilyx"
-crates_version = "0.3.3"
+crates_version = "0.4.2"
 pypi = "sigilyx"
-pypi_version = "0.3.3"
+pypi_version = "0.4.2"
 
 # --------------------------------------------------------------------------
 # Scientific / bioinformatics
