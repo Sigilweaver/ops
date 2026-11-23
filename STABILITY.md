@@ -18,8 +18,7 @@ crate) when it:
 - changes a public signature or return type, including turning a value
   into an `Option` or `Result`;
 - adds a field to a public struct, or a variant to a public enum, that is
-  not `#[non_exhaustive]`;
-- raises the minimum Python version.
+  not `#[non_exhaustive]`.
 
 ## What is not breaking
 
@@ -34,6 +33,10 @@ These ship in minor or patch releases:
 - Errors reported where a value was previously wrong or silently missing.
 - Raising the Rust MSRV. It is listed in the CHANGELOG and the README
   badge.
+- Raising the minimum Python version past one that has reached end of
+  life. It ships in a minor release, never a patch, is the first item in
+  the CHANGELOG under Changed, and follows [SUPPORT.md](SUPPORT.md).
+  Raising it past a version Python still supports upstream is breaking.
 - Dependency updates that do not appear in the public API.
 
 ## Rules that keep it that way

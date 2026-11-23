@@ -15,6 +15,7 @@ repo, not the projects themselves.
 | [`DOCS_MAINTENANCE.md`](DOCS_MAINTENANCE.md) | Shared docs generation and output checks, pinned CI integration, and the mechanical rollout command. |
 | [`PROVENANCE.md`](PROVENANCE.md) | Where the vendor-format readers may get format knowledge, what may be cross-checked against vendor software, and how sources are recorded. |
 | [`STABILITY.md`](STABILITY.md) | What counts as a breaking change for the mass-spec crates and Python packages, and the rules that keep breaking releases rare. |
+| [`SUPPORT.md`](SUPPORT.md) | Which Python, Rust and Node versions and which operating systems the Sigilweaver projects build and test for, and how those floors are raised. |
 | [`release.toml.template`](release.toml.template) | `cargo-release` configuration template for Sigilweaver Rust workspaces. Copy to a repo root as `release.toml` to opt into coordinated release behavior. |
 | [`scripts/check-versions.sh`](scripts/check-versions.sh) | Verifies each per-project repo's `Cargo.toml` / `pyproject.toml` matches the value recorded in `versions.toml`. |
 | [`scripts/org_work.py`](scripts/org_work.py) | Pulls the whole org's issues, PRs, checks, reviews and recent branch work into a searchable local queue. Keeps ownership and next-action notes across refreshes. |
