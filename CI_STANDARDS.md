@@ -14,11 +14,13 @@ platforms nobody tests.
 The `ci.yml` test matrix must mirror the `release.yml`/`publish.yml`
 wheel-build matrix exactly. Testing a platform you don't ship wastes CI
 minutes; shipping a platform you don't test is how bugs reach users
-first. If a release workflow builds `ubuntu-latest` + `macos-14` +
+first. If a release workflow builds `ubuntu-latest` + `macos-latest` +
 `windows-latest` wheels, the CI test matrix must run on all three, both
 for the Rust test suite and any Python-level (`pytest`/smoke-test)
 coverage - a real bug in this sweep was in a Python test script, not
-Rust.
+Rust. Architectures that are cross-built or built on a different image
+than they target (Linux aarch64, macOS Intel) are tested less; see
+[`SUPPORT.md`](SUPPORT.md).
 
 **Lint/fmt: once, on Linux, not per-OS.** `cargo fmt --check` and
 `cargo clippy` are OS-independent (barring rare `cfg(windows)`/
@@ -41,7 +43,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-14, windows-latest]  # match release.yml exactly
+        os: [ubuntu-latest, macos-latest, windows-latest]  # match release.yml exactly
     runs-on: ${{ matrix.os }}
     defaults:
       run:
@@ -67,9 +69,11 @@ jobs:
       # this "just works" on macOS/Windows.
 ```
 
-Use `macos-14` (Apple Silicon), not the deprecated Intel `macos-13`/
-`macos-latest` alias, unless a repo has a specific reason to keep
-testing Intel too - match whatever `release.yml` actually builds.
+Use the GitHub-hosted latest images: `ubuntu-latest`, `windows-latest`
+and `macos-latest`. Where a runner image lacks a toolchain a job needs,
+pin the previous image for that one job and remove the pin when the
+image catches up. macOS Intel builds are best effort, for as long as
+GitHub offers an Intel runner. See [`SUPPORT.md`](SUPPORT.md).
 
 ## Known gotchas to bake in proactively
 
