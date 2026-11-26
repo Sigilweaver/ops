@@ -153,6 +153,19 @@ class OrgWorkTests(unittest.TestCase):
             current = work.read_json(root / "snapshot.json")
             self.assertEqual(current["changes"]["removed"], ["Sigilweaver/Test#1"])
 
+    def test_repo_missing_from_listing_and_expected_set_is_dropped(self):
+        for expected, code, kept in (("Other", 0, 0), ("Test", 1, 1)):
+            with tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                work.write_json(root / "snapshot.json", snapshot())
+                args = work.parser().parse_args(["--data-dir", directory, "sync", "--expected-repos", expected])
+                with patch.object(work, "gh_json", side_effect=[[], {"login": "maintainer"}]):
+                    self.assertEqual(work.sync(args), code)
+                current = work.read_json(root / "snapshot.json")
+                self.assertEqual(len(current["repositories"]), kept)
+                self.assertEqual(current["repository_count"], kept)
+                self.assertEqual(len(current["errors"]), kept)
+
     def test_failed_repo_survives_until_next_successful_closure_read(self):
         raw = {"full_name": "Sigilweaver/Test", "html_url": "https://github.com/Sigilweaver/Test",
                "private": True, "archived": False, "default_branch": "main"}
