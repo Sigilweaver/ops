@@ -18,11 +18,11 @@
 [mass_spectrometry.openmassspec]
 repo = "Sigilweaver/OpenMassSpec"
 crate = "openmassspec-io"
-crates_version = "2.1.0"
+crates_version = "2.1.1"
 cli_crate = "openmassspec-io-cli"
-cli_version = "2.1.0"
+cli_version = "2.1.1"
 pypi = "openmassspec"
-pypi_version = "2.1.0"
+pypi_version = "2.1.1"
 
 [mass_spectrometry.openmassspec-core]
 repo = "Sigilweaver/OpenMassSpecCore"
@@ -62,9 +62,9 @@ pypi_version = "3.0.1"
 [mass_spectrometry.openwraw]
 repo = "Sigilweaver/OpenWRaw"
 crate = "openwraw"
-crates_version = "4.0.1"
+crates_version = "4.0.2"
 pypi = "openwraw"
-pypi_version = "4.0.1"
+pypi_version = "4.0.2"
 
 [mass_spectrometry.openszraw]
 repo = "Sigilweaver/OpenSZRaw"
