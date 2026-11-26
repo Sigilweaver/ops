@@ -504,6 +504,11 @@ def sync(args) -> int:
                 errors.append({"repo": name, "error": str(exc)})
                 print(f"{name}: read failed: {exc}", file=sys.stderr)
     known_names = listed_names | {repo["name"] for repo in (previous or {}).get("repositories", [])}
+    if args.expected_repos is not None:
+        expected = {name if "/" in name else f"{args.org}/{name}" for name in args.expected_repos.split(",") if name}
+        for name in sorted(known_names - listed_names - expected):
+            known_names.discard(name)
+            print(f"{name}: no longer in the organization listing or the expected set; dropped with its cached work", file=sys.stderr)
     for name in sorted(known_names - listed_names):
         errors.append({"repo": name, "error": "Previously visible repository is missing from the organization listing; cached work retained"})
     snapshot = {
@@ -535,6 +540,8 @@ def parser() -> argparse.ArgumentParser:
     fetch.add_argument("--org", default="Sigilweaver")
     fetch.add_argument("--jobs", type=int, default=4)
     fetch.add_argument("--branch-days", type=int, default=14)
+    fetch.add_argument("--expected-repos", help="Comma-separated repositories that should still exist. A previously seen repository "
+                       "missing from the org listing and absent from this set is dropped with its cached work instead of reported as a read error")
     sub.add_parser("report", help="Rebuild reports from the saved snapshot without network access")
     update = sub.add_parser("track", help="Set local work state; does not change GitHub")
     update.add_argument("key", help="owner/repo#number or owner/repo@branch")
