@@ -55,7 +55,7 @@ try_url() {
 }
 
 download() {
-  local name sha url fallback status=0
+  local name sha url fallback status=0 got round
   mkdir -p "$STAGE"
   while read -r name sha url fallback _; do
     if [ -z "$sha" ] || [ -z "$url" ]; then
@@ -67,8 +67,21 @@ download() {
       echo "Already present: $name"
       continue
     fi
-    if try_url "$STAGE/$name" "$url" "$sha" \
-        || { [ -n "${fallback:-}" ] && try_url "$STAGE/$name" "$fallback" "$sha"; }; then
+    # The hosts can refuse connections from a runner address for a few
+    # minutes, so make several passes over the URLs with a pause between.
+    got=0
+    for round in $(seq 1 "${ROUNDS:-3}"); do
+      if try_url "$STAGE/$name" "$url" "$sha" \
+          || { [ -n "${fallback:-}" ] && try_url "$STAGE/$name" "$fallback" "$sha"; }; then
+        got=1
+        break
+      fi
+      if [ "$round" -lt "${ROUNDS:-3}" ]; then
+        echo "Round $round failed for $name; waiting ${ROUND_PAUSE:-60}s"
+        sleep "${ROUND_PAUSE:-60}"
+      fi
+    done
+    if [ "$got" = 1 ]; then
       echo "Fetched $name ($(wc -c < "$STAGE/$name" | tr -d ' ') bytes, sha256 ok)"
     else
       echo "::error::could not fetch $name from any URL"
