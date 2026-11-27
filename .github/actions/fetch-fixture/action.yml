@@ -1,0 +1,76 @@
+# Usage (pin to an exact ops commit):
+#
+#   - uses: Sigilweaver/ops/.github/actions/fetch-fixture@<commit-sha>
+#     with:
+#       destination: corpus
+#       fixtures: |
+#         <file-name> <sha256> <url> [<fallback-url>]
+#
+# Compute each sha256 once from the current file. A mismatch is treated as a
+# failed download and the fallback URL, if any, is tried next.
+
+name: Fetch fixtures
+description: >-
+  Download public test fixtures with retries, a fallback URL and a SHA-256
+  check, and cache them so the upstream host is only hit on a cache miss.
+
+inputs:
+  fixtures:
+    description: >-
+      One fixture per line: `<file-name> <sha256> <url> [<fallback-url>]`,
+      separated by whitespace. Blank lines and lines starting with `#` are
+      ignored. The cache key is derived from this text, so changing a URL or
+      a checksum refreshes the cache.
+    required: true
+  destination:
+    description: Directory the verified files are copied into (created if missing).
+    default: corpus
+  user-agent:
+    description: User-Agent header sent with each request.
+    default: Sigilweaver-CI/1.0
+
+outputs:
+  cache-hit:
+    description: "'true' when every fixture came from the cache."
+    value: ${{ steps.restore.outputs.cache-hit }}
+
+runs:
+  using: composite
+  steps:
+    - name: Prepare fixture list
+      id: prep
+      shell: bash
+      env:
+        FIXTURES: ${{ inputs.fixtures }}
+      run: bash "${{ github.action_path }}/fetch.sh" prepare
+
+    - name: Restore fixture cache
+      id: restore
+      uses: actions/cache/restore@v6
+      with:
+        path: ${{ steps.prep.outputs.stage }}
+        key: ${{ steps.prep.outputs.key }}
+
+    - name: Download and verify fixtures
+      if: steps.restore.outputs.cache-hit != 'true'
+      shell: bash
+      env:
+        FIXTURES: ${{ inputs.fixtures }}
+        STAGE: ${{ steps.prep.outputs.stage }}
+        USER_AGENT: ${{ inputs.user-agent }}
+      run: bash "${{ github.action_path }}/fetch.sh" download
+
+    - name: Save fixture cache
+      if: steps.restore.outputs.cache-hit != 'true'
+      uses: actions/cache/save@v6
+      with:
+        path: ${{ steps.prep.outputs.stage }}
+        key: ${{ steps.prep.outputs.key }}
+
+    - name: Install fixtures
+      shell: bash
+      env:
+        FIXTURES: ${{ inputs.fixtures }}
+        STAGE: ${{ steps.prep.outputs.stage }}
+        DESTINATION: ${{ inputs.destination }}
+      run: bash "${{ github.action_path }}/fetch.sh" install

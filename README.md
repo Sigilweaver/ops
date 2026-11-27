@@ -15,6 +15,7 @@ repo, not the projects themselves.
 | [`PROVENANCE.md`](PROVENANCE.md) | Where the vendor-format readers may get format knowledge, what may be cross-checked against vendor software, and how sources are recorded. |
 | [`STABILITY.md`](STABILITY.md) | What counts as a breaking change for the mass-spec crates and Python packages, and the rules that keep breaking releases rare. |
 | [`SUPPORT.md`](SUPPORT.md) | Which Python, Rust and Node versions and which operating systems the Sigilweaver projects build and test for, and how those floors are raised. |
+| [`.github/actions/fetch-fixture`](.github/actions/fetch-fixture/action.yml) | Composite action that downloads CI test fixtures with retries, an optional fallback URL and a SHA-256 check, and caches them so PRIDE is hit only on a cache miss. Callers pin it to an exact ops commit, as with `docs.yml`. Usage is in the action's header comment. |
 | [`scripts/check-versions.sh`](scripts/check-versions.sh) | Verifies each per-project repo's `Cargo.toml` / `pyproject.toml` matches the value recorded in `versions.toml`. |
 
 ## What does not live here
