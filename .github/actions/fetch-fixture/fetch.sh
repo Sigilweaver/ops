@@ -13,11 +13,15 @@ sha256_of() {
 
 # Print "name sha url [fallback]" for each fixture line.
 fixture_lines() {
-  printf '%s\n' "$FIXTURES" | sed -e 's/\r$//' | awk 'NF && $1 !~ /^#/'
+  printf '%s\n' "$FIXTURES" | tr -d '\r' | awk 'NF && $1 !~ /^#/'
 }
 
 prepare() {
   local key stage
+  if [ -z "$(fixture_lines)" ]; then
+    echo "::error::the fixtures input has no entries"
+    return 1
+  fi
   key="$(fixture_lines | { sha256sum 2>/dev/null || shasum -a 256; } | cut -c1-32)"
   stage="${RUNNER_TEMP:-/tmp}/fixtures-$key"
   mkdir -p "$stage"
