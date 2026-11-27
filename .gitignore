@@ -4,7 +4,6 @@
 # Allowlist: org-ops files tracked by this repository
 !/.gitignore
 !/README.md
-!/BACKLOG.md
 !/CI_STANDARDS.md
 !/DOCS_MAINTENANCE.md
 !/.github/
@@ -13,7 +12,6 @@
 !/SUPPORT.md
 !/scripts/
 !/versions.toml
-!/release.toml.template
 
-# Local org snapshots can include private repositories and discussions.
+# Python bytecode from the docs scripts.
 /scripts/__pycache__/

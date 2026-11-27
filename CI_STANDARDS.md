@@ -222,27 +222,6 @@ manifests exist alongside it, don't force a nonexistent ecosystem.
 nowhere except SigilYX before the rollout (and even there it was
 missing the docs/ npm entry, since fixed).
 
-## Current compliance (surveyed 2026-07-19, updated same day after the
-concurrency/dependabot rollout)
-
-| Repo | Tests on | Ships for | Status |
-|---|---|---|---|
-| OpenTFRaw, OpenTimsTDF, OpenQVD, OpenQBW, SpecLance, DICOM-Atlas, SigilYX, OpenMassSpec, OpenYXDB, OpenARaw, OpenSXRaw, OpenSZRaw | ubuntu + macos + windows | same | matches |
-| OpenKSpace, GenoLance | ubuntu (+macos for OpenKSpace) | crates.io only, no wheels | no gap - nothing platform-specific ships |
-
-SigilYX (#23), OpenYXDB (#3), OpenMassSpec's Windows job, and
-OpenARaw/OpenSXRaw/OpenSZRaw (#10/#14/#12) all closed out via separate
-PRs merged 2026-07-19. Every repo in scope now matches the standard -
-no open test-matrix gaps as of 2026-07-19.
-
-Gap issues are tracked per-repo and linked from
-[`BACKLOG.md`](BACKLOG.md#2-real-ci-coverage-cross-cutting); this doc is
-the standard they're measured against, update it if the standard
-changes rather than re-litigating it per-issue.
-
-**Out of scope for now:** Loom, Phreddy, Sigilweaver-Synthetic, `keep` -
-all private, pre-release/early-stage repos. Loom does have the same
-build-vs-test-matrix shape of gap (its `build-*.yml` workflows build
-for all three OSes, `ci.yml`'s test job runs Linux-only) and Phreddy has
-no CI at all, but neither is being tracked as a standards violation
-until those repos are further along.
+Gap issues in individual repos link back here. This doc is the standard they
+are measured against; update it if the standard changes rather than
+re-litigating it per issue.
