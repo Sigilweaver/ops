@@ -22,6 +22,9 @@
 #                Default: $SIGILWEAVER_ROOT, else the parent of this Ops repo.
 #   --remote     Also compare versions.toml against the latest versions
 #                published on crates.io and PyPI (read-only HTTP GETs).
+#                Skipped for entries marked `status = "unpublished"` and for
+#                single fields marked `<prefix>_status = "unpublished"`
+#                (e.g. `cli_status` for `cli_version`).
 #
 # Exit status: 0 all in sync, 1 drift found, 2 anything left unchecked
 # (missing repo, unreadable manifest, nothing checked, unexpected error) or a
@@ -309,11 +312,18 @@ for section, entries in versions.items():
             report("missing", name, f"repo checkout {rel(repo_dir)} not found")
             continue
         print(f" {name} [{repo_dir.name} @ {branch(repo_dir)}]")
-        unpublished = info.get("status") == "unpublished"
-        if remote and unpublished:
+        entry_unpub = info.get("status") == "unpublished"
+        if remote and entry_unpub:
             print(f"  -- {name}: status unpublished, registry check skipped")
         for key in fields:
             want = info[key]
+            prefix = key[: -len("_version")]
+            # `status = "unpublished"` covers the whole entry; `<prefix>_status`
+            # (cli_status, ms_status, crates_status, pypi_status) covers one
+            # version field. Manifests are still checked either way.
+            unpublished = entry_unpub or info.get(f"{prefix}_status") == "unpublished"
+            if remote and unpublished and not entry_unpub:
+                print(f"  -- {name} {prefix}: status unpublished, registry check skipped")
             if key == "crates_version":
                 crate = info.get("crate")
                 check_crate(f"{name} crate {crate}", repo_dir, crate, want)
@@ -325,7 +335,6 @@ for section, entries in versions.items():
                 if remote and pkg and not unpublished:
                     check_remote_pypi(f"{name} pypi {pkg}", pkg, want)
             else:
-                prefix = key[: -len("_version")]
                 crate = info.get(f"{prefix}_crate")
                 check_crate(f"{name} {prefix} crate {crate}", repo_dir, crate, want)
                 if remote and crate and not unpublished:

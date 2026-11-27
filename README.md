@@ -109,7 +109,9 @@ When a project releases a new version:
    `SIGILWEAVER_ROOT=DIR`. Add `--remote` to also compare against the
    versions published on crates.io and PyPI. Exit status: 0 in sync,
    1 drift, 2 something could not be checked (missing repo, unreadable
-   manifest, or no versions found).
+   manifest, or no versions found). Mark anything not yet on a registry
+   `status = "unpublished"` (whole entry) or `<prefix>_status = "unpublished"`
+   (one crate, e.g. `cli_status`); `--remote` skips those.
 3. Commit and push.
 
 ## License

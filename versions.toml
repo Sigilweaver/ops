@@ -6,9 +6,12 @@
 # truth to read from.
 #
 # This file is *descriptive*, not prescriptive: it does not drive any
-# release tooling, it documents what is currently shipped. CI/release
-# scripts (scripts/check-versions.sh) read it to verify each repo's
-# Cargo.toml / pyproject.toml is in sync.
+# release tooling, it documents what is currently shipped. Entries not yet on
+# a registry carry `status = "unpublished"`; a single unpublished crate inside
+# a published entry carries `<prefix>_status = "unpublished"` (e.g.
+# `cli_status` for `cli_version`). CI/release scripts
+# (scripts/check-versions.sh) read it to verify each repo's Cargo.toml /
+# pyproject.toml is in sync.
 
 # --------------------------------------------------------------------------
 # Mass spectrometry stack
@@ -21,6 +24,7 @@ crate = "openmassspec-io"
 crates_version = "2.1.2"
 cli_crate = "openmassspec-io-cli"
 cli_version = "2.1.2"
+cli_status = "unpublished"
 pypi = "openmassspec"
 pypi_version = "2.1.2"
 
@@ -81,6 +85,7 @@ ms_crate = "speclance-ms"
 ms_version = "0.2.0-alpha"
 pypi = "speclance"
 pypi_version = "0.2.0a0"
+status = "unpublished"
 
 # --------------------------------------------------------------------------
 # Data formats
