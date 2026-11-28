@@ -21,12 +21,12 @@
 [mass_spectrometry.openmassspec]
 repo = "Sigilweaver/OpenMassSpec"
 crate = "openmassspec-io"
-crates_version = "2.1.2"
+crates_version = "3.0.0"
 cli_crate = "openmassspec-io-cli"
-cli_version = "2.1.2"
+cli_version = "3.0.0"
 cli_status = "unpublished"
 pypi = "openmassspec"
-pypi_version = "2.1.2"
+pypi_version = "3.0.0"
 
 [mass_spectrometry.openmassspec-core]
 repo = "Sigilweaver/OpenMassSpecCore"
